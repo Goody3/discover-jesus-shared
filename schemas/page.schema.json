@@ -1,1 +1,192 @@
-{}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discover Jesus Dynamic Page Schema",
+  "type": "object",
+
+  "required": ["id", "title", "version", "sections"],
+
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the page."
+    },
+
+    "title": {
+      "type": "string",
+      "description": "Human-readable page title."
+    },
+
+    "version": {
+      "type": "integer",
+      "description": "Version number for caching and updates."
+    },
+
+    "layout": {
+      "type": "string",
+      "enum": ["scroll", "paged", "modal"],
+      "default": "scroll",
+      "description": "Defines how the page is visually structured."
+    },
+
+    "bindings": {
+      "type": "object",
+      "description": "Key/value pairs mapping to backend data sources.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Data path (e.g., user.name, lesson.pages)"
+      }
+    },
+
+    "actions": {
+      "type": "object",
+      "description": "Page-level actions such as onLoad or onExit.",
+      "properties": {
+        "onLoad": { "$ref": "#/definitions/action" },
+        "onExit": { "$ref": "#/definitions/action" }
+      },
+      "additionalProperties": false
+    },
+
+    "sections": {
+      "type": "array",
+      "description": "Ordered list of components or logic blocks.",
+      "items": { "$ref": "#/definitions/node" }
+    }
+  },
+
+  "definitions": {
+
+    "node": {
+      "type": "object",
+      "description": "A component or logic block.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Component type (text, image, button, conditional, loop, etc.)"
+        },
+
+        "value": {
+          "type": "string",
+          "description": "Text value or binding expression."
+        },
+
+        "src": {
+          "type": "string",
+          "description": "Image source URL or asset name."
+        },
+
+        "style": {
+          "type": "object",
+          "description": "Optional styling information.",
+          "additionalProperties": true
+        },
+
+        "action": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered by this component."
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Boolean expression for conditional blocks."
+        },
+
+        "true": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/node" },
+          "description": "Nodes rendered when condition is true."
+        },
+
+        "false": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/node" },
+          "description": "Nodes rendered when condition is false."
+        },
+
+        "source": {
+          "type": "string",
+          "description": "Binding path for loop arrays (e.g., lesson.pages)."
+        },
+
+        "template": {
+          "$ref": "#/definitions/node",
+          "description": "Template node for loop rendering."
+        }
+      }
+    },
+
+    "action": {
+      "type": "object",
+      "description": "Defines an action triggered by a component or page.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "navigate",
+            "apiCall",
+            "showModal",
+            "setLocal",
+            "getLocal",
+            "navigateIf",
+            "sequence",
+            "animate"
+          ],
+          "description": "Action type."
+        },
+
+        "target": {
+          "type": "string",
+          "description": "Target page ID or modal ID."
+        },
+
+        "params": {
+          "type": "object",
+          "description": "Parameters passed to navigation or API calls.",
+          "additionalProperties": true
+        },
+
+        "endpoint": {
+          "type": "string",
+          "description": "Backend API endpoint for apiCall actions."
+        },
+
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE"],
+          "description": "HTTP method for apiCall."
+        },
+
+        "body": {
+          "type": "object",
+          "description": "Payload for apiCall.",
+          "additionalProperties": true
+        },
+
+        "onSuccess": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on successful API response."
+        },
+
+        "onFailure": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on failed API response."
+        },
+
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action" },
+          "description": "Sequence of actions for multi-step flows."
+        },
+
+        "animation": {
+          "type": "string",
+          "enum": ["fadeIn", "fadeOut", "slideUp", "slideDown"],
+          "description": "Basic animation type."
+        }
+      }
+    }
+  }
+}
+
