@@ -1,1 +1,79 @@
-{}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discover Jesus Actions Schema",
+  "type": "object",
+
+  "definitions": {
+    "action": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "navigate",
+            "apiCall",
+            "showModal",
+            "setLocal",
+            "getLocal",
+            "navigateIf",
+            "sequence",
+            "animate"
+          ],
+          "description": "Action type identifier."
+        },
+
+        "target": {
+          "type": "string",
+          "description": "Target page ID, modal ID, or route."
+        },
+
+        "params": {
+          "type": "object",
+          "description": "Parameters passed to navigation or API calls.",
+          "additionalProperties": true
+        },
+
+        "endpoint": {
+          "type": "string",
+          "description": "Backend API endpoint for apiCall actions."
+        },
+
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE"],
+          "description": "HTTP method for apiCall."
+        },
+
+        "body": {
+          "type": "object",
+          "description": "Payload for apiCall.",
+          "additionalProperties": true
+        },
+
+        "onSuccess": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on successful API response."
+        },
+
+        "onFailure": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on failed API response."
+        },
+
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action" },
+          "description": "Sequence of actions for multi-step flows."
+        },
+
+        "animation": {
+          "type": "string",
+          "enum": ["fadeIn", "fadeOut", "slideUp", "slideDown"],
+          "description": "Basic animation type."
+        }
+      }
+    }
+  }
+}
+
