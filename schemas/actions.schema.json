@@ -14,6 +14,7 @@
             "navigate",
             "apiCall",
             "showModal",
+            "openExternalUrl",
             "setLocal",
             "getLocal",
             "navigateIf",
@@ -23,9 +24,28 @@
           "description": "Action type identifier."
         },
 
-        "target": {
+        "pageId": {
           "type": "string",
-          "description": "Target page ID, modal ID, or route."
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "description": "Stable UUID of the destination page for navigate and navigateIf actions."
+        },
+
+        "modalId": {
+          "type": "string",
+          "description": "Identifier of the modal opened by a showModal action."
+        },
+
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "description": "HTTPS destination URL for an openExternalUrl action."
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Condition expression evaluated by navigateIf. Expression syntax and evaluation semantics are not defined by this schema."
         },
 
         "params": {
@@ -72,8 +92,73 @@
           "enum": ["fadeIn", "fadeOut", "slideUp", "slideDown"],
           "description": "Basic animation type."
         }
-      }
+      },
+      "not": {
+        "required": ["target"]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "navigate" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["pageId"],
+            "not": {
+              "anyOf": [
+                { "required": ["modalId"] },
+                { "required": ["url"] },
+                { "required": ["condition"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "navigateIf" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["pageId", "condition"],
+            "not": {
+              "anyOf": [
+                { "required": ["modalId"] },
+                { "required": ["url"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "showModal" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["modalId"],
+            "not": {
+              "anyOf": [
+                { "required": ["pageId"] },
+                { "required": ["url"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "openExternalUrl" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["url"],
+            "not": {
+              "anyOf": [
+                { "required": ["pageId"] },
+                { "required": ["modalId"] }
+              ]
+            }
+          }
+        }
+      ]
     }
   }
 }
-
