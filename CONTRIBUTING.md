@@ -82,3 +82,6 @@ for consequential cross-cutting technical choices.
 │   └── stories/           # One document per story
 └── schemas/               # Shared dynamic-content JSON schemas
 ```
+
+## Folder Structure
+
