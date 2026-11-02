@@ -1,1 +1,1103 @@
-{}
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Discover Jesus API",
+    "version": "1.0.0",
+    "description": "Backend API for the Discover Jesus platform. Provides endpoints for dynamic page retrieval, versioned page content, user context, lesson page listings, and action tracking.",
+    "contact": {
+      "name": "Discover Jesus Platform Team"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.discoverjesus.com/v1",
+      "description": "Production"
+    },
+    {
+      "url": "https://staging-api.discoverjesus.com/v1",
+      "description": "Staging"
+    },
+    {
+      "url": "http://localhost:3000/v1",
+      "description": "Local development"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Pages",
+      "description": "Dynamic page retrieval and versioned content"
+    },
+    {
+      "name": "Lessons",
+      "description": "Lesson structure and page listings"
+    },
+    {
+      "name": "User",
+      "description": "Authenticated user context and profile state"
+    },
+    {
+      "name": "Actions",
+      "description": "Event and interaction tracking"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "paths": {
+    "/pages/{id}": {
+      "get": {
+        "operationId": "getPageById",
+        "summary": "Get a page by ID",
+        "description": "Returns the latest published version of a dynamic page by its unique identifier.",
+        "tags": ["Pages"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageId"
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "BCP 47 locale code for content language. Defaults to `en`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en",
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Page found and returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page"
+                },
+                "examples": {
+                  "basicPage": {
+                    "$ref": "#/components/examples/BasicPage"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/pages/{id}/versions/{version}": {
+      "get": {
+        "operationId": "getPageVersion",
+        "summary": "Get a specific version of a page",
+        "description": "Returns a pinned version of a dynamic page. Useful for previewing drafts, diffing content changes, or restoring historical states.",
+        "tags": ["Pages"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PageId"
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "Monotonically incrementing integer version number of the page.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "example": 3
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "BCP 47 locale code for content language. Defaults to `en`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en",
+              "default": "en"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Versioned page found and returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageVersion"
+                },
+                "examples": {
+                  "versionedPage": {
+                    "$ref": "#/components/examples/VersionedPage"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/user/context": {
+      "get": {
+        "operationId": "getUserContext",
+        "summary": "Get authenticated user context",
+        "description": "Returns the current user's profile state, progress, preferences, and feature flags. This endpoint is called on session initialization to bootstrap the client.",
+        "tags": ["User"],
+        "responses": {
+          "200": {
+            "description": "User context returned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserContext"
+                },
+                "examples": {
+                  "authenticatedUser": {
+                    "$ref": "#/components/examples/UserContextExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/lessons/{id}/pages": {
+      "get": {
+        "operationId": "getLessonPages",
+        "summary": "List all pages in a lesson",
+        "description": "Returns an ordered list of page summaries belonging to the specified lesson. Page bodies are not included; fetch individual pages via `GET /pages/{id}`.",
+        "tags": ["Lessons"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Unique identifier of the lesson.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+            }
+          },
+          {
+            "name": "locale",
+            "in": "query",
+            "description": "BCP 47 locale code for content language. Defaults to `en`.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "example": "en",
+              "default": "en"
+            }
+          },
+          {
+            "name": "includeUnpublished",
+            "in": "query",
+            "description": "When `true`, includes draft and unpublished pages. Requires elevated permissions.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ordered list of page summaries for the lesson.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonPagesResponse"
+                },
+                "examples": {
+                  "lessonPages": {
+                    "$ref": "#/components/examples/LessonPagesExample"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    },
+    "/actions/track": {
+      "post": {
+        "operationId": "trackAction",
+        "summary": "Track a user action or event",
+        "description": "Records a user interaction event such as page views, lesson completions, quiz answers, media plays, or custom engagement signals. Responses are asynchronous — the server acknowledges receipt immediately.",
+        "tags": ["Actions"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrackActionRequest"
+              },
+              "examples": {
+                "pageView": {
+                  "$ref": "#/components/examples/TrackPageView"
+                },
+                "lessonComplete": {
+                  "$ref": "#/components/examples/TrackLessonComplete"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Action accepted for processing.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrackActionResponse"
+                }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+          "500": { "$ref": "#/components/responses/InternalServerError" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT issued by the Discover Jesus auth service. Include as `Authorization: Bearer <token>`."
+      }
+    },
+    "parameters": {
+      "PageId": {
+        "name": "id",
+        "in": "path",
+        "description": "Unique identifier of the page.",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+        }
+      }
+    },
+    "schemas": {
+      "Page": {
+        "type": "object",
+        "description": "A fully-hydrated dynamic page at its latest published version.",
+        "required": ["id", "slug", "title", "version", "status", "content", "metadata", "createdAt", "updatedAt"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this page.",
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-safe slug derived from the page title.",
+            "example": "who-is-jesus"
+          },
+          "title": {
+            "type": "string",
+            "description": "Display title of the page.",
+            "example": "Who Is Jesus?"
+          },
+          "version": {
+            "type": "integer",
+            "description": "Current published version number.",
+            "minimum": 1,
+            "example": 4
+          },
+          "status": {
+            "$ref": "#/components/schemas/PageStatus"
+          },
+          "locale": {
+            "type": "string",
+            "description": "BCP 47 locale of the returned content.",
+            "example": "en"
+          },
+          "content": {
+            "$ref": "#/components/schemas/PageContent"
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMetadata"
+          },
+          "lessonId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the parent lesson, if this page belongs to one.",
+            "nullable": true,
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-01-15T08:00:00Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-20T14:32:00Z"
+          }
+        }
+      },
+      "PageVersion": {
+        "allOf": [
+          { "$ref": "#/components/schemas/Page" },
+          {
+            "type": "object",
+            "description": "A historical or draft version of a page with additional versioning metadata.",
+            "required": ["versionLabel", "publishedAt", "authorId"],
+            "properties": {
+              "versionLabel": {
+                "type": "string",
+                "description": "Human-readable label assigned to this version.",
+                "example": "Content refresh Q3 2026"
+              },
+              "publishedAt": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true,
+                "description": "Timestamp when this version was published. Null if draft.",
+                "example": "2026-09-01T09:00:00Z"
+              },
+              "authorId": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID of the user who authored this version.",
+                "example": "b7e2a134-1c2d-4567-89ab-cdef01234567"
+              },
+              "changeNotes": {
+                "type": "string",
+                "description": "Optional editorial notes describing changes in this version.",
+                "nullable": true,
+                "example": "Updated scripture references and added reflection questions."
+              }
+            }
+          }
+        ]
+      },
+      "PageContent": {
+        "type": "object",
+        "description": "Structured content blocks that compose the body of a page.",
+        "required": ["blocks"],
+        "properties": {
+          "blocks": {
+            "type": "array",
+            "description": "Ordered array of content blocks rendered by the client.",
+            "items": {
+              "$ref": "#/components/schemas/ContentBlock"
+            }
+          }
+        }
+      },
+      "ContentBlock": {
+        "type": "object",
+        "description": "A single renderable content block within a page.",
+        "required": ["id", "type", "data"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this block within the page.",
+            "example": "block-001"
+          },
+          "type": {
+            "type": "string",
+            "description": "Block type that determines how the client renders it.",
+            "enum": [
+              "heading",
+              "paragraph",
+              "image",
+              "video",
+              "scripture",
+              "quote",
+              "cta",
+              "divider",
+              "quiz",
+              "reflection"
+            ],
+            "example": "paragraph"
+          },
+          "data": {
+            "type": "object",
+            "description": "Type-specific payload. Shape varies by `type`.",
+            "additionalProperties": true,
+            "example": {
+              "text": "Jesus is the central figure of Christianity, believed by followers to be the Son of God."
+            }
+          }
+        }
+      },
+      "PageMetadata": {
+        "type": "object",
+        "description": "SEO and open-graph metadata for the page.",
+        "properties": {
+          "seoTitle": {
+            "type": "string",
+            "nullable": true,
+            "example": "Who Is Jesus? | Discover Jesus"
+          },
+          "seoDescription": {
+            "type": "string",
+            "nullable": true,
+            "example": "Explore the life, teachings, and significance of Jesus Christ."
+          },
+          "ogImageUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://cdn.discoverjesus.com/images/who-is-jesus-og.jpg"
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" },
+            "example": ["jesus", "faith", "christianity"]
+          },
+          "readingTimeMinutes": {
+            "type": "integer",
+            "minimum": 1,
+            "nullable": true,
+            "example": 5
+          }
+        }
+      },
+      "PageStatus": {
+        "type": "string",
+        "description": "Publication lifecycle status of the page.",
+        "enum": ["draft", "published", "archived"],
+        "example": "published"
+      },
+      "PageSummary": {
+        "type": "object",
+        "description": "Lightweight page summary used in list responses. Does not include full content blocks.",
+        "required": ["id", "slug", "title", "version", "status", "order"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "slug": {
+            "type": "string",
+            "example": "who-is-jesus"
+          },
+          "title": {
+            "type": "string",
+            "example": "Who Is Jesus?"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 4
+          },
+          "status": {
+            "$ref": "#/components/schemas/PageStatus"
+          },
+          "order": {
+            "type": "integer",
+            "description": "1-based display order of this page within its parent lesson.",
+            "minimum": 1,
+            "example": 1
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/PageMetadata"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-09-20T14:32:00Z"
+          }
+        }
+      },
+      "LessonPagesResponse": {
+        "type": "object",
+        "description": "Ordered collection of page summaries belonging to a lesson.",
+        "required": ["lessonId", "pages", "total"],
+        "properties": {
+          "lessonId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "pages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PageSummary"
+            }
+          },
+          "total": {
+            "type": "integer",
+            "description": "Total number of pages in this lesson.",
+            "example": 6
+          }
+        }
+      },
+      "UserContext": {
+        "type": "object",
+        "description": "Bootstrapping payload describing the authenticated user's current state.",
+        "required": ["userId", "profile", "progress", "preferences", "featureFlags"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier of the authenticated user.",
+            "example": "b7e2a134-1c2d-4567-89ab-cdef01234567"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/UserProfile"
+          },
+          "progress": {
+            "$ref": "#/components/schemas/UserProgress"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/UserPreferences"
+          },
+          "featureFlags": {
+            "type": "object",
+            "description": "Key/value map of feature flags active for this user.",
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "example": {
+              "reflectionQuestions": true,
+              "videoContent": false,
+              "betaDashboard": true
+            }
+          }
+        }
+      },
+      "UserProfile": {
+        "type": "object",
+        "required": ["displayName", "email"],
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "example": "Jordan Smith"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "jordan.smith@example.com"
+          },
+          "avatarUrl": {
+            "type": "string",
+            "format": "uri",
+            "nullable": true,
+            "example": "https://cdn.discoverjesus.com/avatars/b7e2a134.jpg"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["learner", "mentor", "admin"],
+            "example": "learner"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-03-01T00:00:00Z"
+          }
+        }
+      },
+      "UserProgress": {
+        "type": "object",
+        "description": "Summary of the user's learning journey state.",
+        "properties": {
+          "completedLessons": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs of lessons the user has fully completed.",
+            "example": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+          },
+          "completedPages": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "IDs of individual pages the user has viewed/completed.",
+            "example": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"]
+          },
+          "currentLessonId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "The lesson the user is currently working through.",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "currentPageId": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true,
+            "description": "The page the user last visited.",
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "streakDays": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Current consecutive-day engagement streak.",
+            "example": 7
+          }
+        }
+      },
+      "UserPreferences": {
+        "type": "object",
+        "properties": {
+          "locale": {
+            "type": "string",
+            "description": "Preferred content locale.",
+            "example": "en"
+          },
+          "emailNotifications": {
+            "type": "boolean",
+            "example": true
+          },
+          "theme": {
+            "type": "string",
+            "enum": ["light", "dark", "system"],
+            "example": "system"
+          }
+        }
+      },
+      "TrackActionRequest": {
+        "type": "object",
+        "description": "Payload describing a user interaction event to record.",
+        "required": ["eventType", "occurredAt"],
+        "properties": {
+          "eventType": {
+            "type": "string",
+            "description": "Namespaced event type identifier.",
+            "enum": [
+              "page.viewed",
+              "page.completed",
+              "lesson.started",
+              "lesson.completed",
+              "video.played",
+              "video.paused",
+              "video.completed",
+              "quiz.answered",
+              "reflection.submitted",
+              "cta.clicked"
+            ],
+            "example": "page.viewed"
+          },
+          "occurredAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp of when the event occurred on the client.",
+            "example": "2026-10-25T18:00:00Z"
+          },
+          "pageId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the page related to this event, if applicable.",
+            "nullable": true,
+            "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+          },
+          "lessonId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID of the lesson related to this event, if applicable.",
+            "nullable": true,
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "durationSeconds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Time in seconds the user spent on the page or interacting with the content.",
+            "nullable": true,
+            "example": 142
+          },
+          "metadata": {
+            "type": "object",
+            "description": "Arbitrary additional event-specific data (e.g., quiz answer choice, CTA label).",
+            "additionalProperties": true,
+            "nullable": true,
+            "example": {
+              "quizQuestionId": "q-001",
+              "selectedOption": "b"
+            }
+          }
+        }
+      },
+      "TrackActionResponse": {
+        "type": "object",
+        "required": ["eventId", "status"],
+        "properties": {
+          "eventId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Server-assigned unique ID for the recorded event.",
+            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["accepted"],
+            "description": "Confirmation that the event was accepted for async processing.",
+            "example": "accepted"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Standard error envelope returned for all 4xx and 5xx responses.",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "Machine-readable error code.",
+                "example": "PAGE_NOT_FOUND"
+              },
+              "message": {
+                "type": "string",
+                "description": "Human-readable description of the error.",
+                "example": "The requested page could not be found."
+              },
+              "details": {
+                "type": "array",
+                "description": "Optional field-level validation errors.",
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "required": ["field", "issue"],
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "example": "eventType"
+                    },
+                    "issue": {
+                      "type": "string",
+                      "example": "Must be one of the allowed enum values."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "The request was malformed or missing required fields.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "BAD_REQUEST",
+                "message": "Request body is missing required field `eventType`.",
+                "details": [
+                  { "field": "eventType", "issue": "Field is required." }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Authentication credentials were missing or invalid.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "UNAUTHORIZED",
+                "message": "A valid Bearer token is required.",
+                "details": null
+              }
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "The authenticated user does not have permission to access this resource.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "FORBIDDEN",
+                "message": "You do not have permission to view this resource.",
+                "details": null
+              }
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The requested resource does not exist.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "NOT_FOUND",
+                "message": "The requested resource could not be found.",
+                "details": null
+              }
+            }
+          }
+        }
+      },
+      "UnprocessableEntity": {
+        "description": "The request was well-formed but contains semantic errors.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "UNPROCESSABLE_ENTITY",
+                "message": "The value provided for `eventType` is not recognized.",
+                "details": [
+                  { "field": "eventType", "issue": "Must be one of the allowed enum values." }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "InternalServerError": {
+        "description": "An unexpected server-side error occurred.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" },
+            "example": {
+              "error": {
+                "code": "INTERNAL_SERVER_ERROR",
+                "message": "An unexpected error occurred. Please try again later.",
+                "details": null
+              }
+            }
+          }
+        }
+      }
+    },
+    "examples": {
+      "BasicPage": {
+        "summary": "A published page at its latest version",
+        "value": {
+          "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "slug": "who-is-jesus",
+          "title": "Who Is Jesus?",
+          "version": 4,
+          "status": "published",
+          "locale": "en",
+          "content": {
+            "blocks": [
+              {
+                "id": "block-001",
+                "type": "heading",
+                "data": { "level": 1, "text": "Who Is Jesus?" }
+              },
+              {
+                "id": "block-002",
+                "type": "paragraph",
+                "data": { "text": "Jesus is the central figure of Christianity, believed by followers to be the Son of God." }
+              },
+              {
+                "id": "block-003",
+                "type": "scripture",
+                "data": {
+                  "reference": "John 3:16",
+                  "text": "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+                  "translation": "NIV"
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "seoTitle": "Who Is Jesus? | Discover Jesus",
+            "seoDescription": "Explore the life, teachings, and significance of Jesus Christ.",
+            "ogImageUrl": "https://cdn.discoverjesus.com/images/who-is-jesus-og.jpg",
+            "tags": ["jesus", "faith", "christianity"],
+            "readingTimeMinutes": 5
+          },
+          "lessonId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "createdAt": "2026-01-15T08:00:00Z",
+          "updatedAt": "2026-09-20T14:32:00Z"
+        }
+      },
+      "VersionedPage": {
+        "summary": "A pinned historical version of a page",
+        "value": {
+          "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "slug": "who-is-jesus",
+          "title": "Who Is Jesus?",
+          "version": 3,
+          "status": "published",
+          "locale": "en",
+          "content": {
+            "blocks": [
+              {
+                "id": "block-001",
+                "type": "heading",
+                "data": { "level": 1, "text": "Who Is Jesus?" }
+              },
+              {
+                "id": "block-002",
+                "type": "paragraph",
+                "data": { "text": "An earlier draft of the introduction paragraph." }
+              }
+            ]
+          },
+          "metadata": {
+            "seoTitle": "Who Is Jesus? | Discover Jesus",
+            "seoDescription": "Explore the life, teachings, and significance of Jesus Christ.",
+            "ogImageUrl": null,
+            "tags": ["jesus"],
+            "readingTimeMinutes": 4
+          },
+          "lessonId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "createdAt": "2026-01-15T08:00:00Z",
+          "updatedAt": "2026-07-10T11:00:00Z",
+          "versionLabel": "Initial published version",
+          "publishedAt": "2026-03-01T09:00:00Z",
+          "authorId": "b7e2a134-1c2d-4567-89ab-cdef01234567",
+          "changeNotes": null
+        }
+      },
+      "UserContextExample": {
+        "summary": "Bootstrapped context for an authenticated learner",
+        "value": {
+          "userId": "b7e2a134-1c2d-4567-89ab-cdef01234567",
+          "profile": {
+            "displayName": "Jordan Smith",
+            "email": "jordan.smith@example.com",
+            "avatarUrl": "https://cdn.discoverjesus.com/avatars/b7e2a134.jpg",
+            "role": "learner",
+            "joinedAt": "2026-03-01T00:00:00Z"
+          },
+          "progress": {
+            "completedLessons": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+            "completedPages": ["f47ac10b-58cc-4372-a567-0e02b2c3d479"],
+            "currentLessonId": "c3d4e5f6-a7b8-90cd-efab-123456789012",
+            "currentPageId": "e6f7a8b9-c0d1-2345-6789-abcdef012345",
+            "streakDays": 7
+          },
+          "preferences": {
+            "locale": "en",
+            "emailNotifications": true,
+            "theme": "system"
+          },
+          "featureFlags": {
+            "reflectionQuestions": true,
+            "videoContent": false,
+            "betaDashboard": true
+          }
+        }
+      },
+      "LessonPagesExample": {
+        "summary": "Ordered pages for a lesson",
+        "value": {
+          "lessonId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "total": 3,
+          "pages": [
+            {
+              "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+              "slug": "who-is-jesus",
+              "title": "Who Is Jesus?",
+              "version": 4,
+              "status": "published",
+              "order": 1,
+              "metadata": {
+                "seoTitle": "Who Is Jesus? | Discover Jesus",
+                "seoDescription": "Explore the life, teachings, and significance of Jesus Christ.",
+                "ogImageUrl": "https://cdn.discoverjesus.com/images/who-is-jesus-og.jpg",
+                "tags": ["jesus", "faith"],
+                "readingTimeMinutes": 5
+              },
+              "updatedAt": "2026-09-20T14:32:00Z"
+            },
+            {
+              "id": "a2b3c4d5-e6f7-8901-bcde-f01234567890",
+              "slug": "the-life-of-jesus",
+              "title": "The Life of Jesus",
+              "version": 2,
+              "status": "published",
+              "order": 2,
+              "metadata": {
+                "seoTitle": "The Life of Jesus | Discover Jesus",
+                "seoDescription": "A journey through the key events of Jesus's earthly life.",
+                "ogImageUrl": null,
+                "tags": ["life", "history"],
+                "readingTimeMinutes": 7
+              },
+              "updatedAt": "2026-08-05T09:15:00Z"
+            },
+            {
+              "id": "b3c4d5e6-f7a8-9012-cdef-012345678901",
+              "slug": "the-teachings-of-jesus",
+              "title": "The Teachings of Jesus",
+              "version": 1,
+              "status": "published",
+              "order": 3,
+              "metadata": {
+                "seoTitle": "The Teachings of Jesus | Discover Jesus",
+                "seoDescription": "Explore the parables, sermons, and wisdom of Jesus.",
+                "ogImageUrl": null,
+                "tags": ["teachings", "parables"],
+                "readingTimeMinutes": 6
+              },
+              "updatedAt": "2026-07-22T16:00:00Z"
+            }
+          ]
+        }
+      },
+      "TrackPageView": {
+        "summary": "Track a page view",
+        "value": {
+          "eventType": "page.viewed",
+          "occurredAt": "2026-10-25T18:00:00Z",
+          "pageId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+          "lessonId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "durationSeconds": 142,
+          "metadata": null
+        }
+      },
+      "TrackLessonComplete": {
+        "summary": "Track a lesson completion",
+        "value": {
+          "eventType": "lesson.completed",
+          "occurredAt": "2026-10-25T18:15:00Z",
+          "pageId": null,
+          "lessonId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+          "durationSeconds": null,
+          "metadata": {
+            "completionPercent": 100
+          }
+        }
+      }
+    }
+  }
+}

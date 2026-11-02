@@ -1,1 +1,82 @@
-{}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discover Jesus Component Schema",
+  "type": "object",
+
+  "required": ["type"],
+
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Component type identifier.",
+      "enum": [
+        "text",
+        "image",
+        "button",
+        "stack",
+        "row",
+        "column",
+        "conditional",
+        "loop",
+        "spacer",
+        "divider",
+        "modal"
+      ]
+    },
+
+    "value": {
+      "type": "string",
+      "description": "Text content or binding expression for text components."
+    },
+
+    "src": {
+      "type": "string",
+      "description": "Image source URL or asset name."
+    },
+
+    "style": {
+      "type": "object",
+      "description": "Optional styling information.",
+      "additionalProperties": true
+    },
+
+    "action": {
+      "$ref": "actions.schema.json#/definitions/action",
+      "description": "Action triggered by this component."
+    },
+
+    "children": {
+      "type": "array",
+      "description": "Child components for stack/row/column layouts.",
+      "items": { "$ref": "component.schema.json" }
+    },
+
+    "condition": {
+      "type": "string",
+      "description": "Boolean expression for conditional components."
+    },
+
+    "true": {
+      "type": "array",
+      "items": { "$ref": "component.schema.json" },
+      "description": "Components rendered when condition is true."
+    },
+
+    "false": {
+      "type": "array",
+      "items": { "$ref": "component.schema.json" },
+      "description": "Components rendered when condition is false."
+    },
+
+    "source": {
+      "type": "string",
+      "description": "Binding path for loop arrays (e.g., lesson.pages)."
+    },
+
+    "template": {
+      "$ref": "component.schema.json",
+      "description": "Template component for loop rendering."
+    }
+  }
+}
+

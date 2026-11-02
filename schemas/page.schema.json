@@ -1,1 +1,323 @@
-{}
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Discover Jesus Dynamic Page Schema",
+  "type": "object",
+
+  "required": ["id", "title", "version", "sections"],
+
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the page."
+    },
+
+    "title": {
+      "type": "string",
+      "description": "Human-readable page title."
+    },
+
+    "version": {
+      "type": "integer",
+      "description": "Version number for caching and updates."
+    },
+
+    "layout": {
+      "type": "string",
+      "enum": ["scroll", "paged", "modal"],
+      "default": "scroll",
+      "description": "Defines how the page is visually structured."
+    },
+
+    "bindings": {
+      "type": "object",
+      "description": "Key/value pairs mapping to backend data sources.",
+      "additionalProperties": {
+        "type": "string",
+        "description": "Data path (e.g., user.name, lesson.pages)"
+      }
+    },
+
+    "actions": {
+      "type": "object",
+      "description": "Page-level actions such as onLoad or onExit.",
+      "properties": {
+        "onLoad": { "$ref": "#/definitions/action" },
+        "onExit": { "$ref": "#/definitions/action" }
+      },
+      "additionalProperties": false
+    },
+
+    "sections": {
+      "type": "array",
+      "description": "Ordered list of components or logic blocks.",
+      "items": { "$ref": "#/definitions/node" }
+    }
+  },
+
+  "definitions": {
+
+    "node": {
+      "oneOf": [
+        { "$ref": "#/definitions/inlineNode" },
+        { "$ref": "#/definitions/componentReference" }
+      ],
+      "description": "A page-authored inline component, logic block, or reusable component reference."
+    },
+
+    "inlineNode": {
+      "type": "object",
+      "description": "A page-authored component or logic block. Reusable components are represented by componentReference nodes.",
+      "required": ["type"],
+      "not": {
+        "properties": {
+          "type": { "const": "componentReference" }
+        },
+        "required": ["type"]
+      },
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Component type (text, image, button, conditional, loop, etc.)"
+        },
+
+        "value": {
+          "type": "string",
+          "description": "Text value or binding expression."
+        },
+
+        "src": {
+          "type": "string",
+          "description": "Image source URL or asset name."
+        },
+
+        "style": {
+          "type": "object",
+          "description": "Optional styling information.",
+          "additionalProperties": true
+        },
+
+        "action": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered by this component."
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Boolean expression for conditional blocks."
+        },
+
+        "true": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/node" },
+          "description": "Nodes rendered when condition is true."
+        },
+
+        "false": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/node" },
+          "description": "Nodes rendered when condition is false."
+        },
+
+        "source": {
+          "type": "string",
+          "description": "Binding path for loop arrays (e.g., lesson.pages)."
+        },
+
+        "template": {
+          "$ref": "#/definitions/node",
+          "description": "Template node for loop rendering."
+        },
+
+        "sourceComponentId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "readOnly": true,
+          "description": "UUID of the reusable component expanded into this node. Response metadata; authors do not provide this value."
+        }
+      }
+    },
+
+    "componentReference": {
+      "type": "object",
+      "description": "A page reference to a reusable component. The backend resolves the latest published immutable revision for the requested locale and expands it as one inline node in page responses.",
+      "required": ["type", "componentId"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "componentReference"
+        },
+        "componentId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "description": "Stable identity of the reusable component definition."
+        },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/node" },
+          "description": "Optional page-authored replacement for the referenced node's child content. Omit to use the published definition's child content."
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "action": {
+      "type": "object",
+      "description": "Defines an action triggered by a component or page.",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "navigate",
+            "apiCall",
+            "showModal",
+            "openExternalUrl",
+            "setLocal",
+            "getLocal",
+            "navigateIf",
+            "sequence",
+            "animate"
+          ],
+          "description": "Action type identifier."
+        },
+
+        "pageId": {
+          "type": "string",
+          "format": "uuid",
+          "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+          "description": "Stable UUID of the destination page for navigate and navigateIf actions."
+        },
+
+        "modalId": {
+          "type": "string",
+          "description": "Identifier of the modal opened by a showModal action."
+        },
+
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://",
+          "description": "HTTPS destination URL for an openExternalUrl action."
+        },
+
+        "condition": {
+          "type": "string",
+          "description": "Condition expression evaluated by navigateIf. Expression syntax and evaluation semantics are not defined by this schema."
+        },
+
+        "params": {
+          "type": "object",
+          "description": "Parameters passed to navigation or API calls.",
+          "additionalProperties": true
+        },
+
+        "endpoint": {
+          "type": "string",
+          "description": "Backend API endpoint for apiCall actions."
+        },
+
+        "method": {
+          "type": "string",
+          "enum": ["GET", "POST", "PUT", "DELETE"],
+          "description": "HTTP method for apiCall."
+        },
+
+        "body": {
+          "type": "object",
+          "description": "Payload for apiCall.",
+          "additionalProperties": true
+        },
+
+        "onSuccess": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on successful API response."
+        },
+
+        "onFailure": {
+          "$ref": "#/definitions/action",
+          "description": "Action triggered on failed API response."
+        },
+
+        "actions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action" },
+          "description": "Sequence of actions for multi-step flows."
+        },
+
+        "animation": {
+          "type": "string",
+          "enum": ["fadeIn", "fadeOut", "slideUp", "slideDown"],
+          "description": "Basic animation type."
+        }
+      },
+      "not": {
+        "required": ["target"]
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "navigate" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["pageId"],
+            "not": {
+              "anyOf": [
+                { "required": ["modalId"] },
+                { "required": ["url"] },
+                { "required": ["condition"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "navigateIf" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["pageId", "condition"],
+            "not": {
+              "anyOf": [
+                { "required": ["modalId"] },
+                { "required": ["url"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "showModal" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["modalId"],
+            "not": {
+              "anyOf": [
+                { "required": ["pageId"] },
+                { "required": ["url"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "openExternalUrl" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["url"],
+            "not": {
+              "anyOf": [
+                { "required": ["pageId"] },
+                { "required": ["modalId"] }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

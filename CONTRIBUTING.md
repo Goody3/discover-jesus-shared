@@ -59,6 +59,29 @@ AI agents (ChatGPT, GROC, etc.) should follow:
 - Commit message style above
 - Avoid generating secrets or credentials
 - Always update documentation when schemas change
+- Follow the repository-level [AI development guide](ai/developer-guide.md)
+- Keep implementation claims limited to code and tests that were actually
+  available during the change
+
+## Documentation
+
+Platform documentation is indexed in [docs/README.md](docs/README.md). Keep
+contracts and related documentation in sync, distinguish confirmed facts from
+proposals, and use [architecture decision records](architecture/decisions/README.md)
+for consequential cross-cutting technical choices.
+
+## Folder Structure
+
+```text
+.
+├── ai/                    # AI-assisted development guidance
+├── api/                   # Backend API contract
+├── architecture/          # Platform overview and decision records
+├── docs/                  # Vision, epics, stories, and platform guidance
+│   ├── epics/             # One document per epic
+│   └── stories/           # One document per story
+└── schemas/               # Shared dynamic-content JSON schemas
+```
 
 ## Folder Structure
 
