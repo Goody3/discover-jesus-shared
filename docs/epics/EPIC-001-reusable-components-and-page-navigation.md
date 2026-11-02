@@ -1,6 +1,6 @@
 # EPIC-001. Reusable components and explicit page navigation
 
-- **Status:** Complete for local-development integration; no production rollout
+- **Status:** Core scope complete for local-development integration; slug-based page retrieval deprecation follow-up proposed; no production rollout
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
@@ -32,6 +32,11 @@ incompatibility is accepted in non-production as recorded in
 [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md).
 There is currently no production environment; any future production rollout
 requires its own approved transition window and operational plan.
+
+The original component and navigation integration is complete. A follow-up
+story proposes migrating consumers from the legacy slug-based page lookup;
+that work requires a consumer inventory and an approved compatibility and
+deprecation plan before the route is marked deprecated or removed.
 
 ## Success criteria
 
@@ -86,3 +91,4 @@ requires its own approved transition window and operational plan.
 | STORY-003 | [Define API, compatibility, and migration requirements](../stories/STORY-003-define-contract-migration-requirements.md) | Complete; current non-production plan documented, future production gates recorded |
 | STORY-004 | [Update the backend for reusable components and page navigation](../stories/STORY-004-update-backend-component-and-navigation-contracts.md) | Complete; backend validated and available in local development |
 | STORY-005 | [Update the web interface for the new backend](../stories/STORY-005-update-web-interface-for-backend-contracts.md) | Complete; local-development integration validated |
+| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed follow-up; consumer inventory and deprecation criteria pending |

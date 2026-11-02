@@ -40,3 +40,20 @@ split it into separate story documents and update the parent epic.
   complete; backend implementation validated and handed off in local development.
 - [STORY-005. Update the web interface for the new backend](STORY-005-update-web-interface-for-backend-contracts.md) —
   complete; local-development integration and recovery checks passed.
+- [STORY-006. Deprecate slug-based page retrieval](STORY-006-deprecate-slug-based-page-retrieval.md) —
+  proposed follow-up; consumer migration and deprecation criteria are not yet
+  agreed.
+- [STORY-007. Add continuous integration to the backend](STORY-007-add-backend-continuous-integration.md) —
+  proposed; EPIC-002.
+- [STORY-008. Add backend integration tests and a dedicated test project](STORY-008-add-backend-integration-tests.md) —
+  proposed; EPIC-002.
+- [STORY-009. Add continuous integration and linting to the web app](STORY-009-add-web-continuous-integration-and-linting.md) —
+  proposed; EPIC-002.
+- [STORY-010. Add web component and API client tests](STORY-010-add-web-component-and-api-tests.md) —
+  proposed; EPIC-002.
+- [STORY-011. Add continuous integration to the iOS app](STORY-011-add-ios-continuous-integration.md) —
+  proposed; EPIC-002.
+- [STORY-012. Add iOS decoding, rendering, and navigation tests](STORY-012-add-ios-decoding-rendering-and-navigation-tests.md) —
+  proposed; EPIC-002.
+- [STORY-013. Agree and report test coverage targets](STORY-013-agree-and-report-coverage-targets.md) —
+  proposed; EPIC-002.
