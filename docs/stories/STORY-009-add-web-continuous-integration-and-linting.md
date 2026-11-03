@@ -1,6 +1,6 @@
 # STORY-009. Add continuous integration and linting to the web app
 
-- **Status:** Proposed
+- **Status:** In progress; implemented in [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4) with CI passing; awaiting merge
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified
@@ -50,6 +50,30 @@ Implementation belongs in the `discover-jesus-web` repository.
 
 - Enabling accessibility lint rules may surface many findings in the current
   large `App.tsx`; fix only what is needed to pass, and record the rest.
+
+## Decisions
+
+- **CI service:** GitHub Actions, matching the backend.
+- **Audit threshold:** `npm audit` reports all findings and fails on High or
+  Critical, matching the backend.
+- **Formatter:** Prettier.
+- **Node version:** 22, pinned in `.nvmrc` and used by CI. `engines` is
+  `>=20.9.0`, the lowest version ESLint 9 supports.
+
+## Implementation status
+
+- ESLint (typescript-eslint, React hooks, jsx-a11y), Prettier, the CI workflow,
+  `.nvmrc`, and README script documentation are in
+  [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4).
+- ESLint reported four findings: one fixed, two suppressed with reasons
+  (`exhaustive-deps`, `no-autofocus`), and one resolved by configuring the
+  label rule depth. No other accessibility findings were reported.
+- Prettier reformatted several files, including `App.tsx` and `styles.css`.
+- The first CI run failed because `dev` contained a truncated duplicate of the
+  `App` function that breaks type-checking and the build. The PR removes it; this
+  also demonstrates the failing-pipeline check. The final run passes.
+- `npm audit` shows no runtime vulnerabilities and one moderate `minimatch`
+  finding in the ESLint toolchain, reported and below the failure threshold.
 
 ## Completion checks
 
