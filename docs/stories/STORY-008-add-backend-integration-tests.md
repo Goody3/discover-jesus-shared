@@ -1,11 +1,11 @@
 # STORY-008. Add backend integration tests and a dedicated test project
 
-- **Status:** Proposed
+- **Status:** Complete; merged in [discover-jesus-backend#7](https://github.com/Goody3/discover-jesus-backend/pull/7) with CI passing
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
-- **Dependencies:** None identified; benefits from
-  [STORY-007](STORY-007-add-backend-continuous-integration.md) for automated
-  runs.
+- **Dependencies:** [STORY-007](STORY-007-add-backend-continuous-integration.md)
+  is complete; its CI workflow starts the SQL Server instance used by these
+  tests.
 
 ## User story
 
@@ -21,7 +21,10 @@ endpoints and the reusable-content endpoints are not covered over HTTP. The
 tests currently sit in `Tests/` and are excluded from the API project with
 `Compile Remove`, with no solution file. `Program` is already exposed as a
 partial class for `WebApplicationFactory`. Implementation belongs in the
-`discover-jesus-backend` repository.
+`discover-jesus-backend` repository. The test project now includes
+`WebApplicationFactory` and uses an isolated SQL Server database per test;
+existing service unit tests continue to use EF Core InMemory. Local SQL Server
+setup is documented in that repository's README.
 
 ## Acceptance criteria
 
@@ -53,9 +56,18 @@ partial class for `WebApplicationFactory`. Implementation belongs in the
 
 ## Dependencies and constraints
 
-- The database approach (for example an in-memory provider versus a real SQL
-  Server instance) is a **decision to be recorded**. Behavior differences
-  between providers must be understood, as the service uses transactions.
+- The CI workflow provides a SQL Server container. Local runs use a documented
+  disposable SQL Server container. The existing service tests continue to use
+  EF Core InMemory and are run alongside the new integration tests.
+
+## Implementation status
+
+- The solution builds with no warnings, and all 18 existing service tests pass.
+- All four SQL Server endpoint integration tests passed in GitHub Actions using
+  the CI SQL Server container. The solution build, EF Core migration drift
+  check, and dependency scan also passed in [PR #7](https://github.com/Goody3/discover-jesus-backend/pull/7).
+- SQL Server tests could not run locally because this environment has no Docker
+  command, SQL Server listener, or configured test connection string.
 
 ## Completion checks
 
