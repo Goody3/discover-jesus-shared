@@ -1,6 +1,6 @@
 # STORY-009. Add continuous integration and linting to the web app
 
-- **Status:** In progress; implemented in [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4) with CI passing; awaiting merge
+- **Status:** Complete; merged in [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4) with CI passing
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified
