@@ -50,9 +50,9 @@ split it into separate story documents and update the parent epic.
   [discover-jesus-backend#7](https://github.com/Goody3/discover-jesus-backend/pull/7);
   EPIC-002.
 - [STORY-009. Add continuous integration and linting to the web app](STORY-009-add-web-continuous-integration-and-linting.md) —
-  in progress; implemented in
-  [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4),
-  CI passing, awaiting merge; EPIC-002.
+  complete; merged in
+  [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4);
+  EPIC-002.
 - [STORY-010. Add web component and API client tests](STORY-010-add-web-component-and-api-tests.md) —
   proposed; EPIC-002.
 - [STORY-011. Add continuous integration to the iOS app](STORY-011-add-ios-continuous-integration.md) —
