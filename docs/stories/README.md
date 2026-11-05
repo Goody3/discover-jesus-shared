@@ -54,7 +54,8 @@ split it into separate story documents and update the parent epic.
   [discover-jesus-web#4](https://github.com/Goody3/discover-jesus-web/pull/4);
   EPIC-002.
 - [STORY-010. Add web component and API client tests](STORY-010-add-web-component-and-api-tests.md) —
-  in progress; implementation and CI checks pass, awaiting review and merge;
+  complete; merged in
+  [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5);
   EPIC-002.
 - [STORY-011. Add continuous integration to the iOS app](STORY-011-add-ios-continuous-integration.md) —
   proposed; EPIC-002.
