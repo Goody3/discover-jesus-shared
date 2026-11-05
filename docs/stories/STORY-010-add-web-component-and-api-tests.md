@@ -1,6 +1,6 @@
 # STORY-010. Add web component and API client tests
 
-- **Status:** In progress; implementation and local checks are complete, CI verification is pending
+- **Status:** In progress; implementation and CI checks pass, awaiting review and merge
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified; runs in CI once
