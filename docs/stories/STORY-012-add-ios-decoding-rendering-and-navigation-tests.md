@@ -1,6 +1,6 @@
 # STORY-012. Add iOS decoding, rendering, and navigation tests
 
-- **Status:** Proposed
+- **Status:** Complete
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified
@@ -60,3 +60,9 @@ Implementation belongs in the `discover-jesus-ios` repository.
 
 - The tests run from the command line and in Xcode.
 - Removing the unknown-component fallback causes a test to fail.
+
+## Implementation notes
+
+- Implemented in `discover-jesus-ios` using the `DiscoverJesusAppTests` unit-test target.
+- Added tests for decoding, renderer fallback behavior, navigation resolution, and error-path handling without requiring a running backend.
+- Added small app seams (`PageContentLogic`, `PageContentLoader`) to make behavior testable in isolation.

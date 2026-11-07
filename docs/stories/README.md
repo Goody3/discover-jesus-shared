@@ -58,8 +58,10 @@ split it into separate story documents and update the parent epic.
   [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5);
   EPIC-002.
 - [STORY-011. Add continuous integration to the iOS app](STORY-011-add-ios-continuous-integration.md) —
-  proposed; EPIC-002.
+  complete; iOS CI workflow added with build/test and dependency scanning;
+  EPIC-002.
 - [STORY-012. Add iOS decoding, rendering, and navigation tests](STORY-012-add-ios-decoding-rendering-and-navigation-tests.md) —
-  proposed; EPIC-002.
+  complete; `DiscoverJesusAppTests` added for decoding, rendering, navigation,
+  and error-path coverage; EPIC-002.
 - [STORY-013. Agree and report test coverage targets](STORY-013-agree-and-report-coverage-targets.md) —
-  proposed; EPIC-002.
+  proposed; prerequisites now complete across backend, web, and iOS; EPIC-002.
