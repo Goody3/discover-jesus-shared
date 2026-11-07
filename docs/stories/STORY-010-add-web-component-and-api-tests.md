@@ -1,6 +1,6 @@
 # STORY-010. Add web component and API client tests
 
-- **Status:** In progress; implementation and CI checks pass, awaiting review and merge
+- **Status:** Complete; merged in [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5) with CI passing
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified; runs in CI once
@@ -57,3 +57,14 @@ Implementation belongs in the `discover-jesus-web` repository.
 
 - `npm test` passes locally and in CI.
 - Temporarily breaking the API error parsing causes a test to fail.
+
+## Implementation status
+
+- Vitest and React Testing Library tests cover the API client, page editor,
+  reusable-component manager, and published-page preview. API requests are
+  mocked at the network boundary, so tests need no running backend.
+- Local tests, formatting, lint, type-check, build, and dependency audit passed.
+  The API error-handling mutation check caused the expected tests to fail.
+- The merged
+  [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5)
+  has passing `build-and-test` and `dependency-audit` CI checks.
