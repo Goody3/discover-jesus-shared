@@ -1,6 +1,6 @@
 # STORY-010. Add web component and API client tests
 
-- **Status:** Proposed
+- **Status:** Complete; merged in [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5) with CI passing
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** None identified; runs in CI once
@@ -16,10 +16,10 @@ preview behavior.
 
 The web retrospective found about five tests, all on the published-page
 preview. The API wrapper in `src/api.ts`, the page and reusable-component
-editors, and error handling are untested. The retrospective suggests Vitest and
-React Testing Library; the final tooling choice is open. Tests should check
-behavior rather than internal structure, because `App.tsx` will be split later
-under [EPIC-006](../epics/EPIC-006-maintainable-client-and-service-structure.md).
+editors, and error handling were untested. The implementation uses Vitest and
+React Testing Library. Tests should check behavior rather than internal
+structure, because `App.tsx` will be split later under
+[EPIC-006](../epics/EPIC-006-maintainable-client-and-service-structure.md).
 Implementation belongs in the `discover-jesus-web` repository.
 
 ## Acceptance criteria
@@ -57,3 +57,14 @@ Implementation belongs in the `discover-jesus-web` repository.
 
 - `npm test` passes locally and in CI.
 - Temporarily breaking the API error parsing causes a test to fail.
+
+## Implementation status
+
+- Vitest and React Testing Library tests cover the API client, page editor,
+  reusable-component manager, and published-page preview. API requests are
+  mocked at the network boundary, so tests need no running backend.
+- Local tests, formatting, lint, type-check, build, and dependency audit passed.
+  The API error-handling mutation check caused the expected tests to fail.
+- The merged
+  [discover-jesus-web#5](https://github.com/Goody3/discover-jesus-web/pull/5)
+  has passing `build-and-test` and `dependency-audit` CI checks.

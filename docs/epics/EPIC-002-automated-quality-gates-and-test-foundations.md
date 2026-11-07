@@ -66,7 +66,7 @@ cover the behavior that the platform depends on most.
 | STORY-007 | [Add continuous integration to the backend](../stories/STORY-007-add-backend-continuous-integration.md) | Complete |
 | STORY-008 | [Add backend integration tests and a dedicated test project](../stories/STORY-008-add-backend-integration-tests.md) | Complete |
 | STORY-009 | [Add continuous integration and linting to the web app](../stories/STORY-009-add-web-continuous-integration-and-linting.md) | Complete |
-| STORY-010 | [Add web component and API client tests](../stories/STORY-010-add-web-component-and-api-tests.md) | Proposed |
+| STORY-010 | [Add web component and API client tests](../stories/STORY-010-add-web-component-and-api-tests.md) | Complete |
 | STORY-011 | [Add continuous integration to the iOS app](../stories/STORY-011-add-ios-continuous-integration.md) | Proposed |
 | STORY-012 | [Add iOS decoding, rendering, and navigation tests](../stories/STORY-012-add-ios-decoding-rendering-and-navigation-tests.md) | Proposed |
 | STORY-013 | [Agree and report test coverage targets](../stories/STORY-013-agree-and-report-coverage-targets.md) | Proposed |

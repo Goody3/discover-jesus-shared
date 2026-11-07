@@ -1,6 +1,6 @@
 # STORY-011. Add continuous integration to the iOS app
 
-- **Status:** Proposed
+- **Status:** Complete
 - **Epic:** [EPIC-002. Automated quality gates and test foundations](../epics/EPIC-002-automated-quality-gates-and-test-foundations.md)
 - **Priority:** TBD
 - **Dependencies:** [STORY-012](STORY-012-add-ios-decoding-rendering-and-navigation-tests.md)
@@ -54,3 +54,10 @@ constraints that are not yet assessed. Implementation belongs in the
 
 - A pull request with a deliberately failing test fails the pipeline.
 - A clean pull request passes.
+
+## Implementation notes
+
+- Implemented in `discover-jesus-ios` with `.github/workflows/ios-ci.yml`.
+- CI runs on PRs and pushes to `dev` and `main`, builds/tests scheme `DiscoverJesus`, and disables signing for CI builds.
+- Dependency scanning is included for PRs and pushes.
+- Canonical build entrypoint is documented as `DiscoverJesusPlatform.xcworkspace` + `DiscoverJesus` scheme.

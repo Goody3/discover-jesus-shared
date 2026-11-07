@@ -23,6 +23,17 @@ only makes sense once the tests and pipelines from the other stories are in
 place. This story spans the backend, web, and iOS repositories and records the
 decision in this repository.
 
+As of November 2026, the prerequisite CI and baseline test stories are marked
+complete:
+
+- Backend CI and tests: STORY-007 and STORY-008.
+- Web CI/lint and tests: STORY-009 and STORY-010.
+- iOS CI and tests: STORY-011 and STORY-012.
+
+This means STORY-013 can now focus on selecting per-product coverage tooling,
+capturing first baselines from CI output, and documenting owner-approved
+targets (reporting-only or enforced gates).
+
 ## Acceptance criteria
 
 1. Coverage is measured for each product in CI, using a tool chosen for that
