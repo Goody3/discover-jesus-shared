@@ -64,4 +64,5 @@ split it into separate story documents and update the parent epic.
   complete; `DiscoverJesusAppTests` added for decoding, rendering, navigation,
   and error-path coverage; EPIC-002.
 - [STORY-013. Agree and report test coverage targets](STORY-013-agree-and-report-coverage-targets.md) —
-  proposed; prerequisites now complete across backend, web, and iOS; EPIC-002.
+  in progress; CI baselines and reporting-only targets approved across backend,
+  web, and iOS; PR review and merge pending; EPIC-002.
