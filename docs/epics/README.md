@@ -30,7 +30,8 @@ parent epic.
   retrieval deprecation follow-up is proposed. Production rollout remains out
   of scope because no production environment exists.
 - [EPIC-002. Automated quality gates and test foundations](EPIC-002-automated-quality-gates-and-test-foundations.md) —
-  proposed from the Sprint 01 retrospectives.
+  complete; all stories delivered, with approved reporting-only coverage
+  targets and merged-branch coverage reporting verified.
 - [EPIC-003. Contract integrity across backend, web, and iOS](EPIC-003-contract-integrity-across-products.md) —
   proposed.
 - [EPIC-004. Secure content authoring and access](EPIC-004-secure-content-authoring-and-access.md) —

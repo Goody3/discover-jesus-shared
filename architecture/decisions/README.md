@@ -27,3 +27,5 @@ rationale.
 - [0003. Coordinated backend-first web transition](0003-coordinated-backend-first-web-transition.md) —
   accepted non-production sequence; any future production transition requires
   separate approval.
+- [0004. Reporting-only coverage targets](0004-reporting-only-coverage-targets.md) —
+  accepted backend, web, and iOS line-coverage goals; no coverage gates.
