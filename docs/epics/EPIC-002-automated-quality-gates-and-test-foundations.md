@@ -1,6 +1,6 @@
 # EPIC-002. Automated quality gates and test foundations
 
-- **Status:** In progress
+- **Status:** Complete; all stories complete and coverage reporting verified on `dev`
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
@@ -69,4 +69,4 @@ cover the behavior that the platform depends on most.
 | STORY-010 | [Add web component and API client tests](../stories/STORY-010-add-web-component-and-api-tests.md) | Complete |
 | STORY-011 | [Add continuous integration to the iOS app](../stories/STORY-011-add-ios-continuous-integration.md) | Complete |
 | STORY-012 | [Add iOS decoding, rendering, and navigation tests](../stories/STORY-012-add-ios-decoding-rendering-and-navigation-tests.md) | Complete |
-| STORY-013 | [Agree and report test coverage targets](../stories/STORY-013-agree-and-report-coverage-targets.md) | In progress |
+| STORY-013 | [Agree and report test coverage targets](../stories/STORY-013-agree-and-report-coverage-targets.md) | Complete |

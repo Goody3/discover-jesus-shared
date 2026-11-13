@@ -43,12 +43,14 @@ to enforce coverage requires a separate owner-approved decision.
 Coverage can be compared with the reporting goals without blocking merges.
 This does not require increasing coverage beyond the existing tests.
 
-Implementation is submitted in
+Implementation merged into `dev` on November 13, 2026 in
 [backend PR #9](https://github.com/Goody3/discover-jesus-backend/pull/9),
 [web PR #7](https://github.com/Goody3/discover-jesus-web/pull/7), and
 [iOS PR #3](https://github.com/Goody3/discover-jesus-ios/pull/3).
-Merge and merged-branch verification remain delivery follow-up work; these
-PR baselines do not establish that the changes are already on `dev`.
+The subsequent `dev` workflows passed and reported the same line coverage:
+[backend run 43431067330](https://github.com/Goody3/discover-jesus-backend/actions/runs/43431067330),
+[web run 43431150278](https://github.com/Goody3/discover-jesus-web/actions/runs/43431150278),
+and [iOS run 43431241152](https://github.com/Goody3/discover-jesus-ios/actions/runs/43431241152).
 
 ## Open questions
 
