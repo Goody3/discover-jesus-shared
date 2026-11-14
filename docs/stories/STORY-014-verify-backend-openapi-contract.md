@@ -54,11 +54,16 @@ do not replace or compare it with the separate shared OpenAPI document.
 
 ## Implementation status
 
-- Implemented locally in `discover-jesus-backend` on
-  `feature/story-014-openapi-verification`: in-process Swagger comparison,
-  copied contract input, CI diagnostic artifact, and update instructions.
+- Implemented in
+  [backend draft PR #10](https://github.com/Goody3/discover-jesus-backend/pull/10):
+  in-process Swagger comparison, copied contract input, CI diagnostic artifact,
+  and update instructions.
 - The new contract test and 18 existing service tests pass. A temporary change
   to the health operation summary failed the comparison; the probe was removed
   and the passing test run repeated.
-- Hosted CI, SQL Server-backed tests, and merged-branch verification have not
-  been run for this change. The story is not yet complete.
+- [Hosted CI run 43606697136](https://github.com/Goody3/discover-jesus-backend/actions/runs/43606697136)
+  passed on November 14, 2026 for revision
+  `27a18b10c84fe9ea9c69893ac79d53ed852a49b9`, including the SQL Server-backed test
+  suite, generated OpenAPI upload, migration-drift check, and dependency scan.
+- PR review, merge, and merged-branch verification remain. The story is not
+  yet complete.
