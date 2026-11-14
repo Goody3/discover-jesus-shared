@@ -35,7 +35,7 @@ parent epic.
 - [EPIC-003. Contract integrity across backend, web, and iOS](EPIC-003-contract-integrity-across-products.md) —
   in progress; separate contract boundaries approved and backend OpenAPI
   verification and web type checks complete, with merged-branch CI verified;
-  legacy removal remains approval-gated.
+  iOS fixture verification started; legacy removal remains approval-gated.
 - [EPIC-004. Secure content authoring and access](EPIC-004-secure-content-authoring-and-access.md) —
   proposed.
 - [EPIC-005. Reliable and consistent API behavior](EPIC-005-reliable-and-consistent-api-behavior.md) —
