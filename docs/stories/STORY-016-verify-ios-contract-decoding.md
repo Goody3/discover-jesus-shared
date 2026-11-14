@@ -84,5 +84,10 @@ provenance under
   `type`) failed the new fixture decoding test with `DecodingError.keyNotFound`.
   The probe was removed and contract validation plus a clean build and all 12
   iOS tests passed again; no runtime decoder change is included.
-- Hosted CI, review, merge, and merged-branch verification remain; this story
-  is not complete.
+- [Hosted iOS CI run 43626188137](https://github.com/Goody3/discover-jesus-ios/actions/runs/43626188137)
+  passed on November 14, 2026 at
+  `83be1a610adec498c6db6ee69073b88a04e1b8bc`, including pinned fixture
+  validation, simulator build/tests, coverage publication, and dependency
+  scanning.
+- Review, merge, and merged-branch verification remain; this story is not
+  complete.
