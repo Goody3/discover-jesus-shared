@@ -1,6 +1,6 @@
 # STORY-015. Generate or verify web API types
 
-- **Status:** In progress
+- **Status:** Complete
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** After backend verification
 - **Dependencies:** [STORY-014](STORY-014-verify-backend-openapi-contract.md)
@@ -12,7 +12,8 @@ incompatible contract changes cannot silently drift from the client.
 
 ## Context
 
-The web API types are hand-written in `discover-jesus-web`. The owning backend
+The web API types were hand-written in `discover-jesus-web`; they now derive
+from a pinned backend contract. The owning backend
 contract is distinct from the shared OpenAPI and content schemas; see
 [ADR 0005](../../architecture/decisions/0005-separate-contract-verification-boundaries.md).
 
@@ -56,7 +57,7 @@ contract is distinct from the shared OpenAPI and content schemas; see
   backend response schemas omitted `required` lists, and `/health` omitted its
   JSON shape; those omissions did not establish the web app's existing
   required-field assumptions.
-- Backend prerequisite submitted in
+- Backend prerequisite merged in
   [discover-jesus-backend#11](https://github.com/Goody3/discover-jesus-backend/pull/11),
   revision
   `dc977a8d61b789bc33683f6d2b0c41cac8f71d8f`: a response-only Swagger filter
@@ -89,7 +90,12 @@ contract is distinct from the shared OpenAPI and content schemas; see
 - Generated types verify the pinned document, not the latest backend branch.
   Updates remain explicit and reviewed. Constructed URLs and runtime response
   payloads are not validated by these compile-time checks.
-- Product draft PRs target `dev`. Hosted CI, review, merge, and merged-branch
-  verification remain.
-  Merge the backend prerequisite before the dependent web change; do not mark
-  this story complete yet.
+- Both product PRs and shared tracking PR #13 merged to `dev` on November 14,
+  2026, with the backend prerequisite merged before the dependent web change.
+- [Backend merged-branch CI run 43624850728](https://github.com/Goody3/discover-jesus-backend/actions/runs/43624850728)
+  passed at `6c3d4ccc1560d02d0f34cc97ae7493fc228c7268`, including the SQL
+  Server-backed test suite and contract verification.
+- [Web merged-branch CI run 43624935136](https://github.com/Goody3/discover-jesus-web/actions/runs/43624935136)
+  passed at `20a6044acc99df65afe1f6bb3ce2e195fffe33dd`, including generated
+  contract verification and the existing quality checks. All completion checks
+  are satisfied.
