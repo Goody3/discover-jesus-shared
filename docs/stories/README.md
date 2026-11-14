@@ -69,8 +69,8 @@ split it into separate story documents and update the parent epic.
 - [STORY-014. Verify the backend OpenAPI contract](STORY-014-verify-backend-openapi-contract.md) —
   complete; backend PR merged and `dev` CI verification passed.
 - [STORY-015. Generate or verify web API types](STORY-015-verify-web-api-types.md) —
-  in progress; backend metadata prerequisite and generated web types validated
-  locally and submitted as draft PRs; hosted verification remains; EPIC-003.
+  complete; backend metadata and generated web types merged, with successful
+  backend and web `dev` CI verification; EPIC-003.
 - [STORY-016. Verify iOS decoding against contract fixtures](STORY-016-verify-ios-contract-decoding.md) —
   proposed; follows backend contract verification; EPIC-003.
 - [STORY-017. Retire legacy component-type fallbacks](STORY-017-retire-legacy-component-type-fallbacks.md) —
