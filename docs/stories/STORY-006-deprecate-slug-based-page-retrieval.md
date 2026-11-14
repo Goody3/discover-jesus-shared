@@ -1,7 +1,7 @@
 # STORY-006. Deprecate slug-based page retrieval
 
 - **Status:** Proposed
-- **Epic:** [EPIC-001. Reusable components and explicit page navigation](../epics/EPIC-001-reusable-components-and-page-navigation.md)
+- **Epic:** [EPIC-003. Contract integrity across products](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** TBD
 - **Dependencies:** [STORY-004](STORY-004-update-backend-component-and-navigation-contracts.md),
   [STORY-005](STORY-005-update-web-interface-for-backend-contracts.md)
@@ -61,6 +61,8 @@ criteria remain to be decided.
 - Selecting UUID-based replacements per use case, including any required
   contract changes.
 - Coordinating client migrations and backend deprecation/removal.
+- Retiring slug-based navigation fallback only after its consumers and content
+  satisfy the same approved compatibility and removal criteria.
 - Updating applicable API documentation and focused tests.
 
 ### Excluded
@@ -76,8 +78,8 @@ criteria remain to be decided.
 
 - Backend work belongs in `discover-jesus-backend`; client work belongs in
   each consumer's owning repository.
-- The source repository and owner for the iOS app, and any additional runtime
-  consumers, must be identified during the consumer inventory.
+- The iOS repository is `Goody3/discover-jesus-ios`; confirm operational owners
+  and any additional runtime consumers during the inventory.
 - Follow [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md)
   for transition coordination. Any future production rollout requires its own
   approved transition plan.

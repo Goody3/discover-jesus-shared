@@ -29,3 +29,6 @@ rationale.
   separate approval.
 - [0004. Reporting-only coverage targets](0004-reporting-only-coverage-targets.md) —
   accepted backend, web, and iOS line-coverage goals; no coverage gates.
+- [0005. Separate contract verification boundaries](0005-separate-contract-verification-boundaries.md) —
+  accepted backend-first verification while preserving distinct shared contracts;
+  legacy retirement still requires inventory and approval.

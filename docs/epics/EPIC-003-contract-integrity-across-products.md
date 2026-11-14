@@ -1,12 +1,12 @@
 # EPIC-003. Contract integrity across backend, web, and iOS
 
-- **Status:** Proposed
+- **Status:** In progress; backend contract verification started
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
 - **Dependencies:** [EPIC-002](EPIC-002-automated-quality-gates-and-test-foundations.md)
-  provides the CI needed to enforce these checks. Builds on
-  [STORY-006](../stories/STORY-006-deprecate-slug-based-page-retrieval.md).
+  provides the CI needed to enforce these checks and is complete. Legacy
+  retirement depends on the inventories and approvals in STORY-006 and STORY-017.
 
 ## Need and opportunity
 
@@ -18,9 +18,12 @@ current contract.
 
 ## Outcome
 
-The checked-in contract is the single source of truth, and each product is
-verified against it automatically. Legacy fallbacks are retired once consumers
-have moved.
+Each checked-in contract remains authoritative for its own representation,
+and products are verified against their identified contract inputs.
+The owner approved preserving the separate backend/shared contracts and
+verifying the backend API first; see
+[ADR 0005](../../architecture/decisions/0005-separate-contract-verification-boundaries.md).
+Legacy fallbacks are retired only after approved inventories and migrations.
 
 ## Success criteria
 
@@ -38,7 +41,8 @@ have moved.
 - Contract verification in the backend.
 - Generated or verified web types.
 - iOS contract-decoding checks.
-- Retirement of legacy fallbacks, via STORY-006.
+- Retirement of legacy retrieval/navigation via STORY-006 and component-type
+  fallbacks via STORY-017.
 
 ### Excluded
 
@@ -47,10 +51,11 @@ have moved.
 
 ## Assumptions, dependencies, and risks
 
-- **Assumptions:** `api/openapi.json` in the backend is the contract artifact
-  that clients should follow. Confirm how it relates to the schemas in this
-  repository before implementation.
-- **Dependencies:** EPIC-002 CI; STORY-006 consumer inventory.
+- **Confirmed boundary:** Backend OpenAPI describes the implemented `/api`
+  HTTP surface. Shared OpenAPI and content schemas remain separate contracts;
+  no automatic `sections`/`content.blocks` mapping is approved.
+- **Dependencies:** EPIC-002 CI is complete. Legacy removal requires consumer
+  and content inventories plus an owner-approved plan.
 - **Risks:** Removing fallbacks may break consumers that have not been
   inventoried. There is no production environment today, but any future
   rollout needs its own plan.
@@ -59,4 +64,8 @@ have moved.
 
 | ID | Story | Status |
 |---|---|---|
-| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed (existing story, to be re-parented from EPIC-001 when this epic is accepted) |
+| STORY-014 | [Verify the backend OpenAPI contract](../stories/STORY-014-verify-backend-openapi-contract.md) | In progress |
+| STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | Proposed; after STORY-014 |
+| STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | Proposed; after STORY-014 |
+| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed; removal requires approved inventory and plan |
+| STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; removal requires approved inventory and plan |
