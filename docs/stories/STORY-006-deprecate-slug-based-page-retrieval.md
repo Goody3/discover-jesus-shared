@@ -1,6 +1,6 @@
 # STORY-006. Deprecate slug-based page retrieval
 
-- **Status:** In progress; UUID management migration approved and implemented locally
+- **Status:** In progress; additive UUID management migration passes CI, removal remains gated
 - **Epic:** [EPIC-003. Contract integrity across products](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** TBD
 - **Dependencies:** [STORY-004](STORY-004-update-backend-component-and-navigation-contracts.md),
@@ -129,8 +129,15 @@ criteria remain to be decided.
   visibility, inline ordering/bindings/actions, creation `Location`, identity
   after slug rename, and missing/malformed/deleted UUIDs. Running it requires
   the SQL Server-backed CI environment; it has not been run locally.
+- [Backend CI run 43627726578](https://github.com/Goody3/discover-jesus-backend/actions/runs/43627726578)
+  passed at `f0466e0797e541784ce077245005c62228529361` on November 14, 2026,
+  including SQL Server-backed tests, OpenAPI verification/artifact upload,
+  migration-drift check, coverage, and dependency scanning.
+- [Web CI run 43627726420](https://github.com/Goody3/discover-jesus-web/actions/runs/43627726420)
+  passed at `099c33c02fb014015455d39da6ac361940429289` on November 14, 2026,
+  including pinned generated-type verification and the existing quality checks.
 - Stored-content counts, external consumers, operational ownership, notice,
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
-  signal or removal is included. Hosted CI, integration validation,
-  review, merge, and merged-branch checks remain for this increment; full story
+  signal or removal is included. Review, merge, live client/backend integration,
+  and merged-branch checks remain for this increment; full story
   closure also requires the remaining compatibility/removal gates.

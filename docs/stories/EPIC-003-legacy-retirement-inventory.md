@@ -2,7 +2,7 @@
 
 - **Date:** 2026-11-14
 - **Status:** Source inventory verified; additive UUID management lookup and
-  web migration approved on November 14, 2026 and implemented locally.
+  web migration approved on November 14, 2026, implemented, and passing hosted CI.
   Retirement policy, stored-content and external-consumer inventories remain
   incomplete. No removal is authorized by this document.
 - **Stories:** [STORY-006](STORY-006-deprecate-slug-based-page-retrieval.md),
@@ -67,8 +67,9 @@ outstanding deprecation/removal policy or certify complete consumer coverage.
 
 The backend implementation is committed at
 `f0466e0797e541784ce077245005c62228529361`. The web pins that input and uses
-public UUID selection, including after slug rename. Both local source changes
-are pending hosted verification and merge. The inventory table above describes
+public UUID selection, including after slug rename. Both product PRs passed
+hosted CI and await review/merge. Live client/backend integration and merged
+verification remain. The inventory table above describes
 the inspected merged baseline, not a claim that those migrations are deployed.
 
 ## STORY-017: component-type and adjacent compatibility
