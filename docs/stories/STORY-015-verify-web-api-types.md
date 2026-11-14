@@ -56,8 +56,9 @@ contract is distinct from the shared OpenAPI and content schemas; see
   backend response schemas omitted `required` lists, and `/health` omitted its
   JSON shape; those omissions did not establish the web app's existing
   required-field assumptions.
-- Backend prerequisite implemented on
-  `feature/story-015-response-contract-types`, revision
+- Backend prerequisite submitted in
+  [discover-jesus-backend#11](https://github.com/Goody3/discover-jesus-backend/pull/11),
+  revision
   `dc977a8d61b789bc33683f6d2b0c41cac8f71d8f`: a response-only Swagger filter
   documents every serialized output field, and a named health DTO documents
   the unchanged health response. Request validation, error metadata, and JSON
@@ -66,7 +67,9 @@ contract is distinct from the shared OpenAPI and content schemas; see
   including false, zero, empty collections, and opaque JSON null. The health
   endpoint is checked in-process. All 32 database-independent backend tests
   passed; SQL Server integration tests have not been run locally for this change.
-- Web implementation on `feature/story-015-web-api-types` vendors that exact
+- Web implementation in
+  [discover-jesus-web#8](https://github.com/Goody3/discover-jesus-web/pull/8)
+  vendors that exact
   backend contract with its revision and SHA-256 digest. Pinned
   `openapi-typescript` generates schema and operation types; the application's
   responses and JSON request literals reference them. Opaque JSON remains
@@ -86,6 +89,7 @@ contract is distinct from the shared OpenAPI and content schemas; see
 - Generated types verify the pinned document, not the latest backend branch.
   Updates remain explicit and reviewed. Constructed URLs and runtime response
   payloads are not validated by these compile-time checks.
-- Publication, hosted CI, review, merge, and merged-branch verification remain.
+- Product draft PRs target `dev`. Hosted CI, review, merge, and merged-branch
+  verification remain.
   Merge the backend prerequisite before the dependent web change; do not mark
   this story complete yet.
