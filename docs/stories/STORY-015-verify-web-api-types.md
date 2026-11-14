@@ -1,6 +1,6 @@
 # STORY-015. Generate or verify web API types
 
-- **Status:** Proposed
+- **Status:** In progress
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** After backend verification
 - **Dependencies:** [STORY-014](STORY-014-verify-backend-openapi-contract.md)
@@ -48,3 +48,48 @@ contract is distinct from the shared OpenAPI and content schemas; see
 
 - A controlled stale-type probe fails CI verification.
 - Web tests, type-check, lint, formatting, and build pass.
+
+## Implementation status
+
+- On November 14, 2026, the owner approved checking backend serialization and
+  correcting required-field metadata before generating web types. The existing
+  backend response schemas omitted `required` lists, and `/health` omitted its
+  JSON shape; those omissions did not establish the web app's existing
+  required-field assumptions.
+- Backend prerequisite submitted in
+  [discover-jesus-backend#11](https://github.com/Goody3/discover-jesus-backend/pull/11),
+  revision
+  `dc977a8d61b789bc33683f6d2b0c41cac8f71d8f`: a response-only Swagger filter
+  documents every serialized output field, and a named health DTO documents
+  the unchanged health response. Request validation, error metadata, and JSON
+  serializer settings are unchanged.
+- Twelve response examples are checked against the configured HTTP serializer,
+  including false, zero, empty collections, and opaque JSON null. The health
+  endpoint is checked in-process. All 32 database-independent backend tests
+  passed; SQL Server integration tests have not been run locally for this change.
+- Web implementation in
+  [discover-jesus-web#8](https://github.com/Goody3/discover-jesus-web/pull/8)
+  vendors that exact
+  backend contract with its revision and SHA-256 digest. Pinned
+  `openapi-typescript` generates schema and operation types; the application's
+  responses and JSON request literals reference them. Opaque JSON remains
+  `unknown`; no shared-schema mapping is inferred.
+- `npm run api:update -- <full-backend-sha> [backend-checkout]` retrieves the
+  committed backend document through GitHub or local Git and regenerates types.
+  CI uses only the vendored input and lockfile, without a sibling checkout,
+  backend server, or cross-repository credentials.
+- `npm run api:check` rejects provenance mismatches and stale generated output.
+  A temporary generated-file change failed that command; a temporary string
+  in the page request's boolean field failed type-checking. Both probes were
+  removed and verification passed again.
+- Web validation passed: 36 tests, type-check, lint, formatting, production
+  build, and the High/Critical dependency-audit gate. The existing seven
+  Moderate dependency findings remain reported, not fixed by this story.
+  Existing API error, 204, editor, and preview tests passed.
+- Generated types verify the pinned document, not the latest backend branch.
+  Updates remain explicit and reviewed. Constructed URLs and runtime response
+  payloads are not validated by these compile-time checks.
+- Product draft PRs target `dev`. Hosted CI, review, merge, and merged-branch
+  verification remain.
+  Merge the backend prerequisite before the dependent web change; do not mark
+  this story complete yet.

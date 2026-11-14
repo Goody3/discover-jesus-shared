@@ -1,6 +1,6 @@
 # EPIC-003. Contract integrity across backend, web, and iOS
 
-- **Status:** In progress; backend contract verification started
+- **Status:** In progress; backend verification complete, web type checks implemented locally
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
@@ -11,8 +11,9 @@
 ## Need and opportunity
 
 All three Sprint 01 retrospectives point to drift risk between the backend and
-its clients. The backend's checked-in `openapi.json` is not verified against
-the running API, the web app's API types are hand-written, and the iOS app
+its clients. The backend's checked-in `openapi.json` is now verified against
+the served API metadata through STORY-014; generated web API types are being
+introduced through STORY-015, and the iOS app
 keeps legacy fallbacks (`legacyType` and slug-based navigation) alongside the
 current contract.
 
@@ -64,8 +65,8 @@ Legacy fallbacks are retired only after approved inventories and migrations.
 
 | ID | Story | Status |
 |---|---|---|
-| STORY-014 | [Verify the backend OpenAPI contract](../stories/STORY-014-verify-backend-openapi-contract.md) | In progress |
-| STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | Proposed; after STORY-014 |
+| STORY-014 | [Verify the backend OpenAPI contract](../stories/STORY-014-verify-backend-openapi-contract.md) | Complete |
+| STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | In progress; local implementation and validation passed |
 | STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | Proposed; after STORY-014 |
 | STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed; removal requires approved inventory and plan |
 | STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; removal requires approved inventory and plan |

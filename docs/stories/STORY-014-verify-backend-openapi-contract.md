@@ -1,6 +1,6 @@
 # STORY-014. Verify the backend OpenAPI contract
 
-- **Status:** In progress
+- **Status:** Complete
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** First verification increment
 - **Dependencies:** [STORY-007](STORY-007-add-backend-continuous-integration.md),
@@ -55,7 +55,7 @@ do not replace or compare it with the separate shared OpenAPI document.
 ## Implementation status
 
 - Implemented in
-  [backend draft PR #10](https://github.com/Goody3/discover-jesus-backend/pull/10):
+  [backend PR #10](https://github.com/Goody3/discover-jesus-backend/pull/10):
   in-process Swagger comparison, copied contract input, CI diagnostic artifact,
   and update instructions.
 - The new contract test and 18 existing service tests pass. A temporary change
@@ -65,5 +65,6 @@ do not replace or compare it with the separate shared OpenAPI document.
   passed on November 14, 2026 for revision
   `27a18b10c84fe9ea9c69893ac79d53ed852a49b9`, including the SQL Server-backed test
   suite, generated OpenAPI upload, migration-drift check, and dependency scan.
-- PR review, merge, and merged-branch verification remain. The story is not
-  yet complete.
+- Merged to `dev` as `157da213ab0617fc1a36611d8746d318d5530f9a`.
+  [Merged-branch CI run 43607360197](https://github.com/Goody3/discover-jesus-backend/actions/runs/43607360197)
+  passed on November 14, 2026. All completion checks are satisfied.
