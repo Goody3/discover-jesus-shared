@@ -1,6 +1,6 @@
 # EPIC-003. Contract integrity across backend, web, and iOS
 
-- **Status:** In progress; backend/web checks complete, iOS fixture verification started
+- **Status:** In progress; backend/web/iOS checks complete, UUID management migration started
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
@@ -67,7 +67,7 @@ Legacy fallbacks are retired only after approved inventories and migrations.
 |---|---|---|
 | STORY-014 | [Verify the backend OpenAPI contract](../stories/STORY-014-verify-backend-openapi-contract.md) | Complete |
 | STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | Complete |
-| STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | In progress; local checks and hosted CI passed, awaiting merge verification |
+| STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | Complete |
 | STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | In progress; additive UUID management migration approved, removal remains gated |
 | STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; removal requires approved inventory and plan |
 

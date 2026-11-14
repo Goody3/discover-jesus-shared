@@ -1,6 +1,6 @@
 # STORY-016. Verify iOS decoding against contract fixtures
 
-- **Status:** In progress
+- **Status:** Complete
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** After backend verification
 - **Dependencies:** [STORY-014](STORY-014-verify-backend-openapi-contract.md),
@@ -53,7 +53,7 @@ provenance under
 
 ## Implementation status
 
-- Submitted in
+- Merged in
   [discover-jesus-ios#4](https://github.com/Goody3/discover-jesus-ios/pull/4)
   on `feature/story-016-contract-fixtures`. No runtime behavior or legacy
   fallback removal is included.
@@ -89,5 +89,8 @@ provenance under
   `83be1a610adec498c6db6ee69073b88a04e1b8bc`, including pinned fixture
   validation, simulator build/tests, coverage publication, and dependency
   scanning.
-- Review, merge, and merged-branch verification remain; this story is not
-  complete.
+- The iOS PR and shared tracking PR #15 merged on November 14, 2026.
+  [Merged-branch iOS CI run 43626983370](https://github.com/Goody3/discover-jesus-ios/actions/runs/43626983370)
+  passed at `57f91588e41c7fd69580a0b6c65896879b5e38cd`, including contract
+  fixture validation, simulator build/tests, coverage publication, and
+  dependency scanning. All completion checks are satisfied.
