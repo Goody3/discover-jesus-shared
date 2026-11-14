@@ -41,8 +41,9 @@ split it into separate story documents and update the parent epic.
 - [STORY-005. Update the web interface for the new backend](STORY-005-update-web-interface-for-backend-contracts.md) —
   complete; local-development integration and recovery checks passed.
 - [STORY-006. Deprecate slug-based page retrieval](STORY-006-deprecate-slug-based-page-retrieval.md) —
-  proposed follow-up; consumer migration and deprecation criteria are not yet
-  agreed.
+  in progress; additive UUID management lookup and web migration approved,
+  with source inventory recorded; deprecation/removal criteria remain gated;
+  EPIC-003.
 - [STORY-007. Add continuous integration to the backend](STORY-007-add-backend-continuous-integration.md) —
   complete; merged workflow and negative-case checks verified; EPIC-002.
 - [STORY-008. Add backend integration tests and a dedicated test project](STORY-008-add-backend-integration-tests.md) —
@@ -64,4 +65,15 @@ split it into separate story documents and update the parent epic.
   complete; `DiscoverJesusAppTests` added for decoding, rendering, navigation,
   and error-path coverage; EPIC-002.
 - [STORY-013. Agree and report test coverage targets](STORY-013-agree-and-report-coverage-targets.md) —
-  proposed; prerequisites now complete across backend, web, and iOS; EPIC-002.
+  complete; reporting-only targets approved across backend, web, and iOS;
+  implementation merged to `dev` with coverage publication verified; EPIC-002.
+- [STORY-014. Verify the backend OpenAPI contract](STORY-014-verify-backend-openapi-contract.md) —
+  complete; backend PR merged and `dev` CI verification passed.
+- [STORY-015. Generate or verify web API types](STORY-015-verify-web-api-types.md) —
+  complete; backend metadata and generated web types merged, with successful
+  backend and web `dev` CI verification; EPIC-003.
+- [STORY-016. Verify iOS decoding against contract fixtures](STORY-016-verify-ios-contract-decoding.md) —
+  complete; mapped fixtures and decoding checks merged, with successful iOS
+  `dev` CI verification and compatibility gaps documented; EPIC-003.
+- [STORY-017. Retire legacy component-type fallbacks](STORY-017-retire-legacy-component-type-fallbacks.md) —
+  proposed; inventory and owner approval required before removal; EPIC-003.

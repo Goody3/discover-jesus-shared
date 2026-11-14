@@ -91,4 +91,6 @@ deprecation plan before the route is marked deprecated or removed.
 | STORY-003 | [Define API, compatibility, and migration requirements](../stories/STORY-003-define-contract-migration-requirements.md) | Complete; current non-production plan documented, future production gates recorded |
 | STORY-004 | [Update the backend for reusable components and page navigation](../stories/STORY-004-update-backend-component-and-navigation-contracts.md) | Complete; backend validated and available in local development |
 | STORY-005 | [Update the web interface for the new backend](../stories/STORY-005-update-web-interface-for-backend-contracts.md) | Complete; local-development integration validated |
-| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed follow-up; consumer inventory and deprecation criteria pending |
+STORY-006, [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md),
+is now owned by [EPIC-003](EPIC-003-contract-integrity-across-products.md);
+consumer inventory and deprecation criteria remain pending.
