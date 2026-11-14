@@ -68,5 +68,9 @@ Legacy fallbacks are retired only after approved inventories and migrations.
 | STORY-014 | [Verify the backend OpenAPI contract](../stories/STORY-014-verify-backend-openapi-contract.md) | Complete |
 | STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | Complete |
 | STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | In progress; local checks and hosted CI passed, awaiting merge verification |
-| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | Proposed; removal requires approved inventory and plan |
+| STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | In progress; additive UUID management migration approved, removal remains gated |
 | STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; removal requires approved inventory and plan |
+
+[Legacy retirement source inventory](../stories/EPIC-003-legacy-retirement-inventory.md)
+records known callers, representation gaps, compatibility dependencies, and
+outstanding evidence. It is not a complete runtime or stored-content inventory.

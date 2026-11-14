@@ -41,8 +41,9 @@ split it into separate story documents and update the parent epic.
 - [STORY-005. Update the web interface for the new backend](STORY-005-update-web-interface-for-backend-contracts.md) —
   complete; local-development integration and recovery checks passed.
 - [STORY-006. Deprecate slug-based page retrieval](STORY-006-deprecate-slug-based-page-retrieval.md) —
-  proposed follow-up; consumer migration and deprecation criteria are not yet
-  agreed; now owned by EPIC-003.
+  in progress; additive UUID management lookup and web migration approved,
+  with source inventory recorded; deprecation/removal criteria remain gated;
+  EPIC-003.
 - [STORY-007. Add continuous integration to the backend](STORY-007-add-backend-continuous-integration.md) —
   complete; merged workflow and negative-case checks verified; EPIC-002.
 - [STORY-008. Add backend integration tests and a dedicated test project](STORY-008-add-backend-integration-tests.md) —
