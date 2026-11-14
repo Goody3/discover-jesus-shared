@@ -117,6 +117,10 @@ criteria remain to be decided.
 - The web pins that backend contract and selects/loads management pages by
   `publicId`. Slug rename preserves selected identity; lookup errors are
   surfaced without silently retrying the legacy route.
+- Submitted as draft PRs targeting `dev`:
+  [discover-jesus-backend#12](https://github.com/Goody3/discover-jesus-backend/pull/12)
+  and [discover-jesus-web#9](https://github.com/Goody3/discover-jesus-web/pull/9).
+  Merge/deploy the backend increment before the dependent web change.
 - Local validation passed: 32 database-independent backend tests, backend test
   project compilation including the new SQL integration test, and all 39 web
   tests plus generated-type check, type-check, lint, formatting, build, and the
@@ -127,6 +131,6 @@ criteria remain to be decided.
   the SQL Server-backed CI environment; it has not been run locally.
 - Stored-content counts, external consumers, operational ownership, notice,
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
-  signal or removal is included. Publication, hosted CI, integration validation,
+  signal or removal is included. Hosted CI, integration validation,
   review, merge, and merged-branch checks remain for this increment; full story
   closure also requires the remaining compatibility/removal gates.
