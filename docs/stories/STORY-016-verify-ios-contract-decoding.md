@@ -53,8 +53,9 @@ provenance under
 
 ## Implementation status
 
-- Implemented locally in `discover-jesus-ios` on
-  `feature/story-016-contract-fixtures`. No runtime behavior or legacy
+- Submitted in
+  [discover-jesus-ios#4](https://github.com/Goody3/discover-jesus-ios/pull/4)
+  on `feature/story-016-contract-fixtures`. No runtime behavior or legacy
   fallback removal is included.
 - Confirmed consumed operations: backend `GetPages` (`GET /api/pages`) and
   `GetPageContent` (`GET /api/content/pages/{pageId}?locale=...`), both 200 JSON
