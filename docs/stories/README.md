@@ -72,6 +72,7 @@ split it into separate story documents and update the parent epic.
   complete; backend metadata and generated web types merged, with successful
   backend and web `dev` CI verification; EPIC-003.
 - [STORY-016. Verify iOS decoding against contract fixtures](STORY-016-verify-ios-contract-decoding.md) —
-  proposed; follows backend contract verification; EPIC-003.
+  in progress; mapped fixtures and decoding checks added, with representation
+  gaps and preserved legacy behavior documented; EPIC-003.
 - [STORY-017. Retire legacy component-type fallbacks](STORY-017-retire-legacy-component-type-fallbacks.md) —
   proposed; inventory and owner approval required before removal; EPIC-003.
