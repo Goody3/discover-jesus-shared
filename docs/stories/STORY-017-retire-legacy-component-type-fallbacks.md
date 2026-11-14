@@ -53,3 +53,13 @@ does not authorize removal; see
 - Inventory and owner approval are linked to verified migration evidence.
 - Current-contract decoding passes and obsolete fallback behavior is absent.
 - Unknown-component handling and other client tests still pass.
+
+## Inventory preparation
+
+- [Source inventory](EPIC-003-legacy-retirement-inventory.md) identifies iOS
+  `legacyType` precedence, navigation-bar assembly, and adjacent legacy display
+  fields; web/backend producer surfaces; and different renderer type sets.
+- Stored-content counts and approved mappings are still unknown. The historical
+  iOS standardization plan is a proposal, not an accepted payload contract.
+- Removal remains blocked. In particular, changing only the classifier would
+  miss navigation-bar assembly's direct `legacyType` dependency.
