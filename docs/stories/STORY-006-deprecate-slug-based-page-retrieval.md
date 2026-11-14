@@ -117,10 +117,10 @@ criteria remain to be decided.
 - The web pins that backend contract and selects/loads management pages by
   `publicId`. Slug rename preserves selected identity; lookup errors are
   surfaced without silently retrying the legacy route.
-- Submitted as draft PRs targeting `dev`:
+- Merged to `dev` on November 14, 2026:
   [discover-jesus-backend#12](https://github.com/Goody3/discover-jesus-backend/pull/12)
   and [discover-jesus-web#9](https://github.com/Goody3/discover-jesus-web/pull/9).
-  Merge/deploy the backend increment before the dependent web change.
+  The backend increment merged before the dependent web change.
 - Local validation passed: 32 database-independent backend tests, backend test
   project compilation including the new SQL integration test, and all 39 web
   tests plus generated-type check, type-check, lint, formatting, build, and the
@@ -136,8 +136,15 @@ criteria remain to be decided.
 - [Web CI run 43627726420](https://github.com/Goody3/discover-jesus-web/actions/runs/43627726420)
   passed at `099c33c02fb014015455d39da6ac361940429289` on November 14, 2026,
   including pinned generated-type verification and the existing quality checks.
+- [Backend merged-branch CI run 43628450915](https://github.com/Goody3/discover-jesus-backend/actions/runs/43628450915)
+  passed at `75fbdbc8bb69acef24f0f636d693c589188e8259`.
+  [Web merged-branch CI run 43628557431](https://github.com/Goody3/discover-jesus-web/actions/runs/43628557431)
+  passed at `e895d45d5f2b8bb6ee124e0d00b41be8294aef64`.
+  Both results were verified on November 14, 2026; shared tracking PR #16
+  also merged. This verifies the additive increment on merged source, not a
+  deployment or live client/backend integration session.
 - Stored-content counts, external consumers, operational ownership, notice,
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
-  signal or removal is included. Review, merge, live client/backend integration,
-  and merged-branch checks remain for this increment; full story
+  signal or removal is included. Live client/backend integration remains for
+  this increment; full story
   closure also requires the remaining compatibility/removal gates.
