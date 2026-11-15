@@ -77,8 +77,11 @@ does not authorize removal; see
   representations for all 55 immutable revisions while preserving the
   originals. The owner accepted the inventory's role/field mapping as a
   candidate baseline and directed that unresolved cases remain blocked. The
-  final role vocabulary, role-specific fields, and backend link/current-
-  revision mechanics remain open; see
+  owner also selected a separate internal lineage table, migration-time
+  `PublishedAt`, and lineage deletion with the existing component hard-delete.
+  Exact role vocabulary and role-specific fields remain open; backend
+  constraints, transaction, retry, and current-revision tests remain to be
+  implemented. See
   [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
   No data migration or fallback removal is authorized.
 - Removal remains blocked. In particular, changing only the classifier would

@@ -30,11 +30,20 @@ direction are documented in the
 3. Migrate all 55 inventoried reusable-component revisions by retaining each
    original revision unchanged and creating a migrated representation linked
    to its source revision. Do not overwrite or reuse the original revision
-   identity. The backend implementation must define the durable link and how
-   migrated representations are selected as current content.
+   identity. Store provenance in a separate backend lineage table containing
+   source revision ID, migrated revision ID, transformation version, batch ID,
+   and migration timestamp. The migrated revision receives a new,
+   monotonically increasing revision number and a `PublishedAt` equal to the
+   migration time; the source revision retains its original timestamp. The
+   lineage table is backend-internal and does not add a public API response
+   field.
 4. Treat `source.page` as a live page reference and migrate it to the shared
    UUID identity. Convert stored navigation targets only through the approved
    page mapping and action contract.
+5. Preserve existing explicit component-deletion behavior. Delete lineage
+   records in the same transaction when the owning component's revision
+   history is explicitly deleted; migration itself must not delete or alter
+   source revisions.
 
 This decision applies to the hosted development database, backend, web, and
 iOS, plus any additional in-scope consumers the owner identifies. It does not
@@ -70,8 +79,10 @@ boundaries remain as recorded in ADR 0005.
   transformed representations, and make the active-revision behavior explicit.
 - A candidate backend implementation is documented in the
   [EPIC-003 inventory](../../docs/stories/EPIC-003-legacy-retirement-inventory.md#backend-revision-history-evidence-and-candidate-migration-mechanics).
-  Its storage fields and indexes, deletion/cascade behavior, and returned
-  revision metadata are not yet approved.
+  The owner approved the separate lineage-table direction, migration-time
+  `PublishedAt`, and deletion behavior that follows the existing component
+  hard-delete. Exact database constraints, transaction shape, and dry-run
+  reporting remain implementation details to define.
 - Slug values remain user-facing identifiers unless separately approved.
 - Stored-content and consumer inventories must be refreshed before the actual
   migration and cutover.
@@ -80,13 +91,10 @@ boundaries remain as recorded in ADR 0005.
 
 - What canonical role values, role-specific properties, and allowed values
   preserve every inventoried rendering behavior?
-- Should backend provenance use the candidate revision self-reference fields
-  and unique index, or a separate lineage record? How should component
-  deletion affect that audit trail?
-- What should `RevisionNumber` and `PublishedAt` mean on a migrated revision,
-  given that both are returned to clients?
-- How should the backend expose/select the migrated current representation
-  while preserving existing latest-revision behavior?
+- What exact database constraints and transaction sequence implement the
+  approved lineage table and idempotent retry behavior?
+- How should the backend test and validate migrated revision selection and
+  the returned `RevisionNumber`/`PublishedAt` values?
 - What exact client, backend, and content checks gate the non-production
   cutover, and are there additional active consumers?
 - What production transition plan will be required before a future launch?
