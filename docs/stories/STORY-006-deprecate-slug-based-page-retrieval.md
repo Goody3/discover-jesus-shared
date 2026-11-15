@@ -1,6 +1,6 @@
 # STORY-006. Deprecate slug-based page retrieval
 
-- **Status:** In progress; additive UUID management migration passes CI, removal remains gated
+- **Status:** In progress; additive UUID management migration merged, CI-verified, and live-validated, removal remains gated
 - **Epic:** [EPIC-003. Contract integrity across products](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** TBD
 - **Dependencies:** [STORY-004](STORY-004-update-backend-component-and-navigation-contracts.md),
@@ -143,8 +143,20 @@ criteria remain to be decided.
   Both results were verified on November 14, 2026; shared tracking PR #16
   also merged. This verifies the additive increment on merged source, not a
   deployment or live client/backend integration session.
+- A live client/backend integration session ran on November 14, 2026: merged
+  backend `75fbdbc8bb69acef24f0f636d693c589188e8259` served locally against a
+  hosted SQL Server 2022 development database (all three checked-in migrations
+  already applied), with the merged web
+  `e895d45d5f2b8bb6ee124e0d00b41be8294aef64` dev server proxied to it. Using a
+  throwaway page created and deleted within the session: direct API checks
+  passed (create 201 with `publicId`, UUID lookup 200, legacy slug lookup 200,
+  slug rename 200, UUID lookup after rename returned the same identity, old
+  slug 404, unknown UUID 404), and the web UI loaded and reloaded the selected
+  page via `GET /api/pages/by-public-id/{pageId}` only — including after a
+  slug rename performed in the UI — issuing no legacy slug retrieval. Missing
+  locale content 404s surfaced as empty states. This was a local development
+  session against the hosted database, not a deployment.
 - Stored-content counts, external consumers, operational ownership, notice,
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
-  signal or removal is included. Live client/backend integration remains for
-  this increment; full story
-  closure also requires the remaining compatibility/removal gates.
+  signal or removal is included. Full story
+  closure requires the remaining compatibility/removal gates.
