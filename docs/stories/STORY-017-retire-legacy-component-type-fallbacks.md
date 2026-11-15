@@ -25,18 +25,22 @@ does not authorize removal; see
    component-type fallbacks; distinguish verified findings from unknowns.
 2. Map legacy shapes to approved current shapes, documenting incompatible or
    ambiguous records rather than silently dropping them.
-3. Obtain owner approval for compatibility requirements, migration steps,
-   notice/monitoring needs, and measurable removal criteria.
-4. Migrate affected in-scope content/producers and verify consumer decoding
-   against current-contract fixtures before removal.
-5. Remove fallback code and update tests/documentation only when the approved
-   gates are satisfied; retain the unknown-component safety behavior.
+3. Obtain owner approval for current payload mappings, active-content
+   migration, affected producers/consumers, and non-production validation.
+   No deprecation window or backward-compatible reader is required before
+   production.
+4. Migrate active in-scope content and producers, and verify web/iOS decoding
+   and behavior against the approved current representation before cutover.
+5. Remove the legacy fallback as part of the coordinated non-production
+   cutover; retain unknown-component safety behavior. Any future production
+   rollout requires its own transition plan.
 
 ## Scope
 
 ### Included
 
-- Inventory, approved migration, fallback removal, and coordinated tests.
+- Inventory, approved active-content migration, fallback removal, and
+  coordinated non-production validation.
 
 ### Excluded
 
@@ -65,8 +69,11 @@ does not authorize removal; see
   current NBButtons and one nonstandard lowercase `title`). Counts for other
   environments and approved mappings are still unknown. The historical
   iOS standardization plan is a proposal, not an accepted payload contract.
-- Candidate per-role mappings and staged removal gates are drafted in the
+- Candidate per-role mappings and cutover checks are drafted in the
   inventory for owner review. They do not authorize payload changes or fallback
   removal; unmapped or semantically lossy roles remain blocked.
+- The owner has directed that no backward-compatibility period is needed
+  before production. The proposal therefore targets a coordinated
+  non-production cutover after active data migration and known-client checks.
 - Removal remains blocked. In particular, changing only the classifier would
   miss navigation-bar assembly's direct `legacyType` dependency.

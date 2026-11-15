@@ -24,9 +24,9 @@ one with the other is not necessarily a parameter-only change.
 The backend implementation and its API definition are maintained outside this
 shared repository. The web interface and the iOS app are known platform
 consumers, but all callers and their required page fields and behaviors must be
-inventoried before the legacy route is deprecated. The appropriate replacement
-for each use case, any deprecation notice period, and the final removal
-criteria remain to be decided.
+inventoried before the legacy route is removed. The appropriate replacement
+for each use case and the coordinated pre-production cutover checks remain to
+be decided.
 
 ## Acceptance criteria
 
@@ -37,21 +37,23 @@ criteria remain to be decided.
    maps each use case to an approved UUID-based API operation. It explicitly
    accounts for response-shape differences, localized content, and any legacy
    management behavior that has no replacement.
-3. The platform owner approves the deprecation signal, notice period,
-   monitoring, compatibility requirements, and measurable criteria for
-   removing the legacy route. No timeline or removal date is assumed by this
-   story.
-4. Once the compatibility plan is approved, the backend marks the route
-   deprecated in its API documentation and emits the approved deprecation
-   signals. In-scope clients migrate to their approved replacements during the
-   agreed notice period.
-5. Backend and client tests cover the UUID-based use cases and the agreed
-   legacy-route deprecation behavior. Each in-scope client is validated against
-   the backend before removal, and removal occurs only after the approved
-   usage/removal criteria are met.
+3. Before the pre-production cutover, the platform owner approves the
+   replacement operation, UUID identity mapping, stored-content migration,
+   affected clients, and focused validation checks. A deprecation period or
+   backward-compatible fallback is not required for this non-production
+   transition.
+4. The backend and in-scope clients switch to approved UUID-based operations
+   in a coordinated non-production sequence. Remove the legacy route and
+   slug-navigation fallback after the stored content and known callers are
+   migrated and validated; keep user-facing slug fields/URLs unless separately
+   approved.
+5. Backend and client tests cover UUID-based use cases and the post-cutover
+   contract. Validate each known in-scope client end-to-end against the
+   migrated backend/content. Any future production rollout requires its own
+   approved compatibility and transition plan.
 6. Backend API documentation and any applicable shared contracts accurately
-   describe the deprecated route and its replacement without conflating the
-   backend contract with the separate shared OpenAPI contract.
+   describe the post-cutover routes without conflating the backend contract
+   with the separate shared OpenAPI contract.
 
 ## Scope
 
@@ -60,9 +62,10 @@ criteria remain to be decided.
 - Inventorying page-lookup consumers and their data/behavior requirements.
 - Selecting UUID-based replacements per use case, including any required
   contract changes.
-- Coordinating client migrations and backend deprecation/removal.
-- Retiring slug-based navigation fallback only after its consumers and content
-  satisfy the same approved compatibility and removal criteria.
+- Coordinating a breaking backend/client migration and route/fallback removal
+  in non-production.
+- Retiring slug-based navigation fallback after active content and known
+  consumers use the approved UUID representation.
 - Updating applicable API documentation and focused tests.
 
 ### Excluded
@@ -83,20 +86,21 @@ criteria remain to be decided.
 - Follow [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md)
   for transition coordination. Any future production rollout requires its own
   approved transition plan.
-- Do not mark the route deprecated in a shared environment before the
-  compatibility plan is approved or remove it before the migration gates are
-  satisfied.
+- No production environment exists, and a backwards-compatibility period is
+  not required for the planned non-production cutover. Do not remove the route
+  or fallback until the approved data migration and known-client validation
+  gates are satisfied.
 
 ## Completion checks
 
 - [ ] Consumer inventory, replacement mapping, and unresolved behavior gaps
       are reviewed by the platform and implementation owners.
-- [ ] Deprecation and removal criteria, signals, and notice period are
-      approved and documented.
+- [ ] Replacement identity, content migration, affected consumers, and
+      non-production cutover validation are approved and documented.
 - [ ] In-scope clients are migrated and their UUID-based page retrieval is
       validated against the backend.
 - [ ] Backend API documentation and focused backend/client tests reflect the
-      approved deprecation behavior.
+      post-cutover contract.
 - [ ] The legacy route is removed only if the approved removal criteria have
       been met; otherwise its retained status and remaining blockers are
       documented.
@@ -160,11 +164,13 @@ criteria remain to be decided.
   the [legacy retirement inventory](EPIC-003-legacy-retirement-inventory.md):
   all 55 reusable component revisions embed a `source.page` slug and 24 embed
   a slug navigation target, so stored content still depends on slugs even
-  after client migration. External consumers, operational ownership, notice,
-  monitoring, and removal criteria remain unverified/unapproved. No deprecation
-  signal or removal is included. Full story
-  closure requires the remaining compatibility/removal gates.
-- A candidate UUID content-migration and slug-route deprecation policy is
-  drafted in the inventory for owner review. It does not resolve whether
+  after client migration. The authoritative navigation UUID, the `source.page`
+  semantics, and any additional in-scope consumers remain unresolved. No
+  content migration or route/fallback removal is included.
+- A candidate UUID content-migration and slug-route removal plan is drafted
+  in the inventory for owner review. It does not resolve whether
   backend `PublicId` and shared-contract `Page.id` are equivalent and does not
-  authorize a migration or deprecation.
+  authorize a migration or route removal.
+- The owner has directed that no backward-compatibility period is needed
+  before production. A coordinated non-production cutover is proposed instead;
+  UUID identity and content migration decisions still require review.

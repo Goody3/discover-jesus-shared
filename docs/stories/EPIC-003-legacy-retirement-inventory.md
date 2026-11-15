@@ -5,7 +5,7 @@
   web migration approved and merged on November 14, 2026, with passing `dev`
   CI and a same-day live client/backend integration session. The hosted
   development database's stored content is inventoried below.
-  Retirement policy and external-consumer inventories remain
+  Pre-production migration mappings and the in-scope consumer inventory remain
   incomplete. No removal is authorized by this document.
 - **Stories:** [STORY-006](STORY-006-deprecate-slug-based-page-retrieval.md),
   [STORY-017](STORY-017-retire-legacy-component-type-fallbacks.md)
@@ -20,10 +20,11 @@ The source trees inspected match these merged `dev` revisions:
 - Web: `20a6044acc99df65afe1f6bb3ce2e195fffe33dd`.
 - iOS: `57f91588e41c7fd69580a0b6c65896879b5e38cd`.
 
-This is a source inventory, not evidence of runtime usage, a database audit,
-or a list of every consumer. No database or live endpoint was queried.
-Operational owners, imports/scripts outside these repositories, Android or
-other clients, deployed versions, and request-log retention remain unknown.
+The source revisions below establish code-level findings, not runtime usage
+or a list of every consumer. A separate read-only audit of the hosted
+development database is recorded later in this document. Operational owners,
+imports/scripts outside these repositories, Android or other clients, deployed
+versions, and request-log retention remain unknown.
 
 ## STORY-006: page lookup and navigation
 
@@ -31,7 +32,7 @@ other clients, deployed versions, and request-log retention remain unknown.
 | --- | --- | --- |
 | Web management page loading | `App` selects a page by slug and calls `GetPage`. Needs `id`, `publicId`, `slug`, `title`, `isPublished`, and inline `components` with integer IDs, sort order, props, bindings, and actions. Supports unpublished pages and management edits/deletes. | Published-content delivery is not a replacement. Propose a UUID-addressed management lookup returning the existing `PageResponse`. |
 | Backend page creation | `CreatePage` returns a `Location` header pointing to `/api/pages/{slug}` as well as a `PageSummary` body. | After a UUID management lookup exists, coordinate changing `Location` to it; do not leave a dangling slug link on removal. |
-| Backend SQL integration tests | Test lookup after create, slug rename, missing page, and deletion. | Add parity tests for UUID management lookup; retain explicit slug compatibility tests until approved removal. |
+| Backend SQL integration tests | Test lookup after create, slug rename, missing page, and deletion. | Add parity tests for UUID management lookup; update route tests for the coordinated removal cutover. |
 | Web published preview and draft editor | Already use `publicId` for published and draft page-content routes. Preview resolves UUIDs and publication status from page summaries. | Preserve existing locale, draft lifecycle, and published-content behavior; no route substitution needed. |
 | iOS page list and published-page loading | Uses `GET /api/pages` for summaries and public UUID for published content. No slug-detail HTTP call found in app source. | Keep these operations; do not confuse retaining a `slug` field with consuming slug-detail retrieval. |
 | iOS navigation | `targetPage` prefers a matching `action.pageId`, then uses case-insensitive `source.legacyProps.target`. If a supplied UUID has no matching summary, slug fallback is still attempted. | Migrate stored destinations to typed UUID actions before removing fallback; malformed UUID decoding already fails. Missing UUID remains an intentional decoder compatibility gap. |
@@ -52,8 +53,8 @@ other clients, deployed versions, and request-log retention remain unknown.
 ### Approved additive migration increment
 
 On November 14, 2026, the owner approved the UUID management lookup and web
-migration while retaining all legacy compatibility. This does not approve the
-outstanding deprecation/removal policy or certify complete consumer coverage.
+migration while retaining existing legacy behavior for that increment. It did
+not approve route or fallback removal or certify complete consumer coverage.
 
 1. Add `GET /api/pages/by-public-id/{pageId}` with a UUID route constraint,
    distinct operation ID, and the same `PageResponse` shape and management
@@ -63,9 +64,9 @@ outstanding deprecation/removal policy or certify complete consumer coverage.
 3. Generate/verify backend metadata, update the web's pinned contract, and
    switch web management selection/loading to `publicId`. Update creation
    `Location` once the replacement is available.
-4. Retain the slug route and iOS navigation fallback. Deprecation signals,
-   notice period, monitoring window, and final removal are separate approvals.
-   Do not infer them from permission to add a replacement.
+4. Retain the slug route and iOS navigation fallback for this additive
+   increment. The later pre-production cutover is a separate coordinated
+   change and is not authorized by this approval.
 
 The backend implementation is committed at
 `f0466e0797e541784ce077245005c62228529361`. The web pins that input and uses
@@ -137,18 +138,27 @@ a point-in-time snapshot of that single database and authorize nothing.
 External environments, producers, and consumers remain uninventoried; no raw
 content was copied into this document.
 
-## Draft compatibility and retirement proposal — owner review required
+## Draft pre-production cutover proposal — owner review required
 
 **Status:** Proposal only; not an approved contract, migration plan, deprecation
-notice, or authorization to change data or remove compatibility.
+notice, or authorization to change data or remove legacy behavior.
+
+**Owner direction:** Because the platform is not yet in production, a
+backward-compatibility period is not required for this work. The proposal
+therefore uses a coordinated breaking pre-production cutover rather than a
+deprecation window or long-lived fallback. This does not authorize discarding
+stored content: current data must be migrated or explicitly identified for
+disposal, and the known clients must be updated and validated. Any future
+production rollout still needs its own approved transition plan.
 
 The mappings below are candidates based on the hosted development database
 snapshot and checked-in shared schemas. The shared component schema defines
 generic types (`text`, `image`, `button`, `stack`, and others); it does not
 define the observed legacy display roles or their property mappings. In
 addition, the iOS source inventory confirms `source.legacyType` can take
-precedence over `type`. Therefore an observed pair is not proof that deleting
-the legacy field preserves behavior.
+precedence over `type`. Therefore an observed pair is not proof that removing
+the field preserves behavior; define the replacement behavior first, migrate
+the active content, and validate both known clients at cutover.
 
 ### STORY-017: candidate component mapping
 
@@ -164,88 +174,78 @@ the legacy field preserves behavior.
 | `stack` / `NavBar` (2 current) | Preserve navigation-bar role and its child-item relationship explicitly. | Blocked. A generic stack alone does not establish navigation behavior; coordinate with the `NBButton` mapping. |
 | `image` / `Media` (2 current) | Keep `image` if the media source and presentation properties map without loss. | Candidate only. Verify the source/asset mapping and required legacy properties. |
 
-Proposed process: define and review a lossless mapping for each role; transform
-mutable drafts and active published content first; compare decoded/rendered
-behavior in iOS and web; and retain a compatibility reader for historical
-revisions until the owner decides those revisions are no longer deliverable or
-have been safely superseded. Do not rewrite immutable revisions as part of an
-unreviewed bulk update. Producers should be changed to emit only approved
-current shapes before the legacy reader is considered for removal. Unknown
-component handling remains required.
+Proposed process: decide the replacement representation for each role; update
+the backend/web/iOS producers and consumers in the agreed non-production
+sequence; migrate the active drafts and published content; then remove
+`legacyType` interpretation and validate all known client flows. Historical
+immutable revisions may remain stored as archival records but are not promised
+to remain readable by the new client. Alternatively, if the owner wants them
+deliverable, migrate them too. Do not rewrite immutable revisions until the
+owner chooses one of these dispositions. Unknown-component handling remains
+required.
 
 ### STORY-006: candidate slug migration
 
-1. Keep the existing slug route and navigation fallback during migration.
-   The additive UUID management lookup does not replace typed navigation or
-   change the UUID identity decision.
-2. Resolve and review every stored `source.legacyProps.target` as a
-   destination. The 24 currently observed targets resolve by slug, but the
-   existing shared navigation proposal uses UUID `Page.id`, while the backend
-   management model exposes `PublicId`; their equivalence is not established.
-   Approve the authoritative identity and an explicit crosswalk before writing
-   UUID actions. Do not silently substitute backend `PublicId` for shared
-   `Page.id`.
-3. Replace only confirmed internal-page targets with the approved typed
-   navigation action, preserving conditional behavior and other action
-   semantics. Quarantine ambiguous, missing, or non-page destinations for
-   owner review; do not convert them by string shape alone.
-4. Treat `source.page` separately from navigation targets. It appears in all
-   55 revisions, but its producer/consumer semantics are not fully established.
-   Retain it as provenance unless and until owners decide it is a live page
-   reference and approve a stable replacement.
-5. Validate every in-scope draft and published payload, including historical
-   revisions that can still be served. Keep slug compatibility wherever
-   unmigrated content or an inventoried consumer still depends on it.
+1. Decide the authoritative UUID used for navigation. The shared navigation
+   proposal uses UUID `Page.id`, while backend management exposes `PublicId`;
+   their equivalence is not established. Specify the mapping or align the
+   contracts before changing navigation payloads.
+2. Resolve the 24 stored `source.legacyProps.target` values, convert confirmed
+   internal destinations to the approved typed navigation action, and preserve
+   other action semantics. Fix or explicitly discard unresolved/non-page
+   targets; do not infer destinations from string shape alone.
+3. Decide whether `source.page` is required as provenance or a live dependency.
+   If it is only provenance, retain it as inert metadata or remove it from
+   active content after producer/consumer verification; if it is a live page
+   reference, replace it using the approved stable identity.
+4. Migrate active drafts and published content before switching known
+   consumers. Historical immutable revisions need not remain readable under
+   the new format unless the owner explicitly requires that. The legacy slug
+   route and client fallback can then be removed in the coordinated
+   non-production cutover; no deprecation period is proposed.
+5. Validate the backend, web, and iOS against the migrated content and remove
+   all legacy-route callers in the same planned transition. Keep the separate
+   user-facing page slug field/URLs unless separately approved.
 
-### Candidate notice and removal policy
+### Proposed cutover and validation
 
-These are starting values for owner discussion, not approved commitments:
-
-- Publish the approved replacement and migration instructions before marking
-  the legacy route deprecated. Then document deprecation in the owning
-  backend API contract (`deprecated: true`) and emit the owner-approved
-  runtime signal. Candidate runtime signals are the HTTP `Deprecation` and
-  migration-link `Link` headers; add a `Sunset` header only after an owner
-  approves the date. Do not imply the separate shared OpenAPI contract
-  describes this backend route.
-- Proposed minimum notice: **90 calendar days and at least one supported
-  client release cycle, whichever is longer**, measured from the first
-  deprecation notice in each affected environment. No removal date is set.
-- Before removal, require **30 consecutive days with zero observed calls** to
-  the legacy route from identified callers in each environment, explicit
-  confirmation from operational owners that all consumers are inventoried,
-  and successful replacement integration checks. If reliable per-route
-  observation is unavailable, the gate is unmet; absence of telemetry is not
-  evidence of zero use.
-- For stored content, require zero unresolved internal-page targets in all
-  payloads still eligible for delivery, a documented disposition for historical
-  immutable revisions, and successful iOS/web behavior checks. Keep fallback
-  behavior where history must remain deliverable but cannot be migrated.
-- Retain an owner-approved recovery path and the legacy implementation through
-  the notice/observation window. This proposal assumes neither production
-  telemetry nor a release process is currently available; owners must identify
-  those mechanisms before adopting the policy.
+- Coordinate the backend change and dependent web/iOS updates as one bounded
+  non-production transition, following accepted [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md).
+  Temporary incompatibility is acceptable; no public deprecation signal,
+  notice duration, zero-traffic observation window, or backward-compatible
+  fallback is required.
+- Before cutover, verify the approved payload mappings and migrate active
+  content. The cutover gate is successful API/client tests plus end-to-end
+  checks for page selection, navigation, rendering, editor saves, and error
+  handling in every known client. If a check fails, forward-fix the
+  non-production environment; do not assume database rollback is safe after
+  content/schema changes.
+- Keep any future production-release communications, monitoring, recovery, and
+  compatibility requirements out of this proposal; they require separate
+  owner approval before production exists.
 
 ### Owner decisions requested
 
-- Confirm this database's environment/scope and identify any other content
-  stores, producers, clients, or third-party consumers.
+- Confirm the known pre-production scope (hosted development database, backend,
+  web, and iOS) and whether any other active stores or clients must be included.
 - Approve, revise, or reject each candidate component mapping, especially
   `NBButton`, `Header`, `BibleVerse`, `List`, `NavBar`, and lowercase `title`.
 - Decide whether shared `Page.id` and backend `PublicId` are the same
   authoritative navigation identity, or specify the approved mapping.
 - Confirm whether `source.page` is provenance or a live dependency, and whether
-  immutable history must remain client-deliverable.
-- Approve or replace the proposed notice duration, observation window,
-  deprecation signal, telemetry owner, measurable gates, and recovery plan.
+  historical immutable revisions must remain readable after cutover.
+- Confirm the cutover validation scope and that forward-fix is the recovery
+  approach for this non-production transition.
 
 ## Outstanding evidence and removal gates
 
-These are proposed gates, not an approved notice/monitoring policy:
+The first two inventory gates are partially satisfied for the known
+development environment. Remaining gates concern correct migration and
+validation, not a backwards-compatibility window:
 
-1. Identify operational owners and all environments/clients/producers. Confirm
-   external consumers explicitly rather than interpreting no source match as
-   no usage.
+1. Confirm which environments, clients, and producers are in the pre-production
+   scope. External consumers are not assumed to be supported before launch;
+   include any the owner identifies.
 2. Obtain authorized, read-only aggregate inventory for each environment:
    legacy fields/effective-type conflicts, navigation targets and unresolved
    slugs, locale coverage, drafts, published and historical page revisions,
@@ -253,16 +253,13 @@ These are proposed gates, not an approved notice/monitoring policy:
    belongs in this document. The hosted development database is inventoried
    above; counts for any other environment remain **unknown**, not zero.
 3. Approve current section/navigation representations and migration mappings.
-   Quarantine ambiguous records; preserve unknown-component safety. Decide
-   how immutable revision history is retained or superseded.
-4. Migrate producers and affected content; validate before/after behavior in
-   web and iOS, not just JSON syntax or schema metadata.
-5. Approve deprecation signals, notice duration, usage observation window,
-   telemetry ownership, acceptable unknown/conflict counts, and recovery.
-   No date or zero-usage claim is established by this source inventory.
-6. Require verified UUID replacements for known callers, approved zero
-   remaining dependencies (including historical content that can still be
-   served), successful integration checks, and explicit removal authorization.
+   Resolve ambiguous records; preserve unknown-component safety. Decide
+   whether immutable history must remain readable.
+4. Migrate active content and update every known in-scope producer and consumer.
+5. Run focused tests and end-to-end checks for all known clients against the
+   migrated backend/content; remove legacy route and fallback code as part of
+   the coordinated non-production cutover.
 
-Until then, retain slug lookup, slug navigation, `legacyType`, and adjacent
-legacy props. Adding a replacement is not permission to delete compatibility.
+No staged deprecation or compatibility support is proposed for this
+pre-production work. A separate transition plan is required before any future
+production rollout.

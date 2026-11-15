@@ -33,7 +33,9 @@ Legacy fallbacks are retired only after approved inventories and migrations.
 - Web API types are generated from the contract, or verified against it.
 - iOS decoding is verified against contract examples.
 - Legacy slug-based retrieval and legacy component-type fallbacks are removed,
-  following an approved consumer inventory and deprecation plan.
+  following an approved active-content migration and coordinated
+  non-production validation plan. Any future production rollout requires its
+  own transition plan.
 
 ## Scope
 
