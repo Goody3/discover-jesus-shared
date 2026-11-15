@@ -1,6 +1,6 @@
 # EPIC-003. Contract integrity across backend, web, and iOS
 
-- **Status:** In progress; backend/web/iOS checks complete, UUID management migration merged and live-validated
+- **Status:** In progress; backend/web/iOS checks complete, UUID management migration merged and live-validated; retirement proposal drafted, owner review pending
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).

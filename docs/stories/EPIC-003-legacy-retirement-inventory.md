@@ -137,6 +137,108 @@ a point-in-time snapshot of that single database and authorize nothing.
 External environments, producers, and consumers remain uninventoried; no raw
 content was copied into this document.
 
+## Draft compatibility and retirement proposal — owner review required
+
+**Status:** Proposal only; not an approved contract, migration plan, deprecation
+notice, or authorization to change data or remove compatibility.
+
+The mappings below are candidates based on the hosted development database
+snapshot and checked-in shared schemas. The shared component schema defines
+generic types (`text`, `image`, `button`, `stack`, and others); it does not
+define the observed legacy display roles or their property mappings. In
+addition, the iOS source inventory confirms `source.legacyType` can take
+precedence over `type`. Therefore an observed pair is not proof that deleting
+the legacy field preserves behavior.
+
+### STORY-017: candidate component mapping
+
+| Observed `type` / `source.legacyType` | Candidate treatment | Status and required review |
+| --- | --- | --- |
+| `button` / `Button` (12 current) | Keep `button` as the generic type; map text and action fields explicitly. | Candidate only. Determine how `legacyProps.text`, `attribute`, and other properties map; validate iOS and web behavior. |
+| `button` / `NBButton` (4 current) | Keep button behavior and represent navigation-bar membership/role explicitly, separately from generic button type. | Blocked. Current shared component schema has no navigation-bar item role; do not erase this distinction or infer it from layout. |
+| `text` / `Text` (8 current) | Keep `text`; map displayed value explicitly. | Candidate only. Confirm `legacyProps` and binding semantics preserve the current rendered text. |
+| `text` / `Header` (12 current) | Keep `text` with an explicit heading role and level. | Blocked. The shared component schema has no heading role/level; resolve `legacyProps.attribute`, values, and styling before conversion. |
+| `text` / `BibleVerse` (2 current) | Preserve Bible-verse semantics and reference/version as structured data. | Blocked. Do not reduce to plain text until the canonical representation and rendering behavior are approved. |
+| `text` / `title` (1 current) | Quarantine for manual classification; do not normalize automatically. | Blocked. The lowercase legacy value is nonstandard and its intended role is unconfirmed. |
+| `stack` / `List` (4 current) | Preserve list role and item order; use a generic layout only if list semantics remain representable. | Blocked. The shared component schema has no list type; ordered/unordered behavior and marker metadata need mapping. |
+| `stack` / `NavBar` (2 current) | Preserve navigation-bar role and its child-item relationship explicitly. | Blocked. A generic stack alone does not establish navigation behavior; coordinate with the `NBButton` mapping. |
+| `image` / `Media` (2 current) | Keep `image` if the media source and presentation properties map without loss. | Candidate only. Verify the source/asset mapping and required legacy properties. |
+
+Proposed process: define and review a lossless mapping for each role; transform
+mutable drafts and active published content first; compare decoded/rendered
+behavior in iOS and web; and retain a compatibility reader for historical
+revisions until the owner decides those revisions are no longer deliverable or
+have been safely superseded. Do not rewrite immutable revisions as part of an
+unreviewed bulk update. Producers should be changed to emit only approved
+current shapes before the legacy reader is considered for removal. Unknown
+component handling remains required.
+
+### STORY-006: candidate slug migration
+
+1. Keep the existing slug route and navigation fallback during migration.
+   The additive UUID management lookup does not replace typed navigation or
+   change the UUID identity decision.
+2. Resolve and review every stored `source.legacyProps.target` as a
+   destination. The 24 currently observed targets resolve by slug, but the
+   existing shared navigation proposal uses UUID `Page.id`, while the backend
+   management model exposes `PublicId`; their equivalence is not established.
+   Approve the authoritative identity and an explicit crosswalk before writing
+   UUID actions. Do not silently substitute backend `PublicId` for shared
+   `Page.id`.
+3. Replace only confirmed internal-page targets with the approved typed
+   navigation action, preserving conditional behavior and other action
+   semantics. Quarantine ambiguous, missing, or non-page destinations for
+   owner review; do not convert them by string shape alone.
+4. Treat `source.page` separately from navigation targets. It appears in all
+   55 revisions, but its producer/consumer semantics are not fully established.
+   Retain it as provenance unless and until owners decide it is a live page
+   reference and approve a stable replacement.
+5. Validate every in-scope draft and published payload, including historical
+   revisions that can still be served. Keep slug compatibility wherever
+   unmigrated content or an inventoried consumer still depends on it.
+
+### Candidate notice and removal policy
+
+These are starting values for owner discussion, not approved commitments:
+
+- Publish the approved replacement and migration instructions before marking
+  the legacy route deprecated. Then document deprecation in the owning
+  backend API contract (`deprecated: true`) and emit the owner-approved
+  runtime signal. Candidate runtime signals are the HTTP `Deprecation` and
+  migration-link `Link` headers; add a `Sunset` header only after an owner
+  approves the date. Do not imply the separate shared OpenAPI contract
+  describes this backend route.
+- Proposed minimum notice: **90 calendar days and at least one supported
+  client release cycle, whichever is longer**, measured from the first
+  deprecation notice in each affected environment. No removal date is set.
+- Before removal, require **30 consecutive days with zero observed calls** to
+  the legacy route from identified callers in each environment, explicit
+  confirmation from operational owners that all consumers are inventoried,
+  and successful replacement integration checks. If reliable per-route
+  observation is unavailable, the gate is unmet; absence of telemetry is not
+  evidence of zero use.
+- For stored content, require zero unresolved internal-page targets in all
+  payloads still eligible for delivery, a documented disposition for historical
+  immutable revisions, and successful iOS/web behavior checks. Keep fallback
+  behavior where history must remain deliverable but cannot be migrated.
+- Retain an owner-approved recovery path and the legacy implementation through
+  the notice/observation window. This proposal assumes neither production
+  telemetry nor a release process is currently available; owners must identify
+  those mechanisms before adopting the policy.
+
+### Owner decisions requested
+
+- Confirm this database's environment/scope and identify any other content
+  stores, producers, clients, or third-party consumers.
+- Approve, revise, or reject each candidate component mapping, especially
+  `NBButton`, `Header`, `BibleVerse`, `List`, `NavBar`, and lowercase `title`.
+- Decide whether shared `Page.id` and backend `PublicId` are the same
+  authoritative navigation identity, or specify the approved mapping.
+- Confirm whether `source.page` is provenance or a live dependency, and whether
+  immutable history must remain client-deliverable.
+- Approve or replace the proposed notice duration, observation window,
+  deprecation signal, telemetry owner, measurable gates, and recovery plan.
+
 ## Outstanding evidence and removal gates
 
 These are proposed gates, not an approved notice/monitoring policy:

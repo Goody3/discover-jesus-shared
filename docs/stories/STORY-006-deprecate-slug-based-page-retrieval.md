@@ -164,3 +164,7 @@ criteria remain to be decided.
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
   signal or removal is included. Full story
   closure requires the remaining compatibility/removal gates.
+- A candidate UUID content-migration and slug-route deprecation policy is
+  drafted in the inventory for owner review. It does not resolve whether
+  backend `PublicId` and shared-contract `Page.id` are equivalent and does not
+  authorize a migration or deprecation.

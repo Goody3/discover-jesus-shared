@@ -65,5 +65,8 @@ does not authorize removal; see
   current NBButtons and one nonstandard lowercase `title`). Counts for other
   environments and approved mappings are still unknown. The historical
   iOS standardization plan is a proposal, not an accepted payload contract.
+- Candidate per-role mappings and staged removal gates are drafted in the
+  inventory for owner review. They do not authorize payload changes or fallback
+  removal; unmapped or semantically lossy roles remain blocked.
 - Removal remains blocked. In particular, changing only the classifier would
   miss navigation-bar assembly's direct `legacyType` dependency.
