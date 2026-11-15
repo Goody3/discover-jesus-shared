@@ -2,7 +2,8 @@
 
 - **Status:** In progress; backend/web/iOS checks complete, UUID management
   migration merged and live-validated; pre-production retirement direction
-  approved, detailed mappings and cutover gates pending
+  approved, candidate role mapping and revision-lineage policy agreed; final
+  payload mappings and cutover validation pending
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md).
@@ -75,7 +76,7 @@ Legacy fallbacks are retired only after approved inventories and migrations.
 | STORY-015 | [Generate or verify web API types](../stories/STORY-015-verify-web-api-types.md) | Complete |
 | STORY-016 | [Verify iOS decoding against contract fixtures](../stories/STORY-016-verify-ios-contract-decoding.md) | Complete |
 | STORY-006 | [Deprecate slug-based page retrieval](../stories/STORY-006-deprecate-slug-based-page-retrieval.md) | In progress; additive UUID management migration merged and live-validated, removal remains gated |
-| STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; role mappings and validation gates pending, removal blocked |
+| STORY-017 | [Retire legacy component-type fallbacks](../stories/STORY-017-retire-legacy-component-type-fallbacks.md) | Proposed; candidate mapping and lineage policy agreed, backend implementation and validation pending; removal blocked |
 
 [Legacy retirement source inventory](../stories/EPIC-003-legacy-retirement-inventory.md)
 records known callers, representation gaps, compatibility dependencies, and

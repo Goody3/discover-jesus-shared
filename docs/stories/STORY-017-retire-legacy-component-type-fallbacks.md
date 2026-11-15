@@ -1,6 +1,7 @@
 # STORY-017. Retire legacy component-type fallbacks
 
-- **Status:** Proposed; role mappings and validation gates pending, removal blocked
+- **Status:** Proposed; candidate mapping and revision-lineage policy agreed,
+  final mappings and backend validation pending, removal blocked
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** After contract-decoding verification
 - **Dependencies:** [STORY-016](STORY-016-verify-ios-contract-decoding.md)
@@ -57,6 +58,15 @@ does not authorize removal; see
 - Inventory and owner approval are linked to verified migration evidence.
 - Current-contract decoding passes and obsolete fallback behavior is absent.
 - Unknown-component handling and other client tests still pass.
+- Migration tests show that all 55 inventoried originals remain unchanged,
+  each has one transformed revision and exactly one lineage record for its
+  source/transformation version, and dry-run and applied counts agree. A retry
+  creates no duplicate derived revisions.
+- Published retrieval and page expansion return the migrated latest content;
+  response revision number and `PublishedAt` match the approved migration
+  semantics, and a later normal publish receives the next revision number.
+- Explicit component deletion removes associated lineage and revision rows
+  consistently with the existing hard-delete behavior.
 
 ## Inventory preparation
 
