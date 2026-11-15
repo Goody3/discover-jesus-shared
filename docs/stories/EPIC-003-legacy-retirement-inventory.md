@@ -201,10 +201,13 @@ occurrences; `Media.attribute` is `image` in both. The sole `title` record has
 `alignment=center` and `fontSize=large`. These are observed values, not
 complete allowed-value sets.
 
-The table above is a field-mapping proposal, not an accepted payload contract.
-Only generic component types with a top-level `role` location are approved.
-Role values, field names, normalization rules, and any representation changes
-must be approved before adding schema constraints or migrating records.
+On November 14, 2026, the owner accepted the table as a candidate mapping
+baseline and directed that unresolved items remain blocked. This does not make
+the table a final payload contract: generic component types and the top-level
+`role` location are approved directions, while role values, field names,
+normalization rules, and representation changes remain candidates. Do not add
+role enums or migrate records until the final schema and all required mappings
+are approved.
 
 The owner selected a linked migrated representation for each of the 55
 revisions while preserving each original unchanged. The backend must still

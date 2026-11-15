@@ -75,8 +75,10 @@ does not authorize removal; see
 - On November 14, 2026, the owner approved a top-level `role` separate from
   generic `type` and presentation `style`, and selected linked migrated
   representations for all 55 immutable revisions while preserving the
-  originals. The exact role vocabulary, role-specific fields, and backend
-  link/current-revision mechanics remain open; see
+  originals. The owner accepted the inventory's role/field mapping as a
+  candidate baseline and directed that unresolved cases remain blocked. The
+  final role vocabulary, role-specific fields, and backend link/current-
+  revision mechanics remain open; see
   [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
   No data migration or fallback removal is authorized.
 - Removal remains blocked. In particular, changing only the classifier would

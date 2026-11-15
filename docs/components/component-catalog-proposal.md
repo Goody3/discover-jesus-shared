@@ -57,11 +57,13 @@ component store. The catalog describes type families; individual headings,
 verses, and buttons are component instances or content, not new types.
 
 For the EPIC-003 migration of existing legacy revisions, the owner later
-approved using the current generic types with a top-level semantic `role`;
-for example, a heading is proposed as `type=text` with `role=heading`. This
-direction does not approve the catalog's broader type allowlist or settle
-whether new reusable definitions should use these candidate specialized types.
-Reconcile the proposals before implementing the component-store allowlist; see
+approved using the current generic types with a top-level semantic `role` and
+accepted the inventory mapping as a candidate baseline; for example, a heading
+is proposed as `type=text` with `role=heading`. The mapping is not a final
+payload contract, and unresolved fields remain blocked. This direction does
+not approve the catalog's broader type allowlist or settle whether new reusable
+definitions should use these candidate specialized types. Reconcile the
+proposals before implementing the component-store allowlist; see
 [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md)
 and the [EPIC-003 migration mapping](../stories/EPIC-003-legacy-retirement-inventory.md#story-017-candidate-component-mapping).
 
