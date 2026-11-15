@@ -59,7 +59,11 @@ does not authorize removal; see
 - [Source inventory](EPIC-003-legacy-retirement-inventory.md) identifies iOS
   `legacyType` precedence, navigation-bar assembly, and adjacent legacy display
   fields; web/backend producer surfaces; and different renderer type sets.
-- Stored-content counts and approved mappings are still unknown. The historical
+- The hosted development database is inventoried: every reusable component
+  revision carries exactly one top-level `source.legacyType` (47 current
+  revisions across nine observed `type`/`legacyType` pairings, including 4
+  current NBButtons and one nonstandard lowercase `title`). Counts for other
+  environments and approved mappings are still unknown. The historical
   iOS standardization plan is a proposal, not an accepted payload contract.
 - Removal remains blocked. In particular, changing only the classifier would
   miss navigation-bar assembly's direct `legacyType` dependency.

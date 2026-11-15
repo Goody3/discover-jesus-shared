@@ -3,8 +3,9 @@
 - **Date:** 2026-11-14
 - **Status:** Source inventory verified; additive UUID management lookup and
   web migration approved and merged on November 14, 2026, with passing `dev`
-  CI and a same-day live client/backend integration session.
-  Retirement policy, stored-content and external-consumer inventories remain
+  CI and a same-day live client/backend integration session. The hosted
+  development database's stored content is inventoried below.
+  Retirement policy and external-consumer inventories remain
   incomplete. No removal is authorized by this document.
 - **Stories:** [STORY-006](STORY-006-deprecate-slug-based-page-retrieval.md),
   [STORY-017](STORY-017-retire-legacy-component-type-fallbacks.md)
@@ -99,6 +100,43 @@ the inspected merged baseline, not a claim that those migrations are deployed.
   and [node validation](https://github.com/Goody3/discover-jesus-backend/blob/6c3d4ccc1560d02d0f34cc97ae7493fc228c7268/Services/ReusableContentService.cs#L991).
 - [Historical iOS standardization proposal](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/Component-Attribute-Standardization-Plan.md).
 
+## Stored-content inventory: hosted development database
+
+On November 14, 2026, read-only aggregate queries ran against the platform's
+hosted development SQL Server database, whose schema matched the three
+checked-in backend EF Core migrations. This is the only platform content
+store known to the owner today; no production environment exists. Counts are
+a point-in-time snapshot of that single database and authorize nothing.
+
+- **Pages:** 13, all published. Page slugs exist only in `Pages.Slug`; no
+  page-section, embedded-component, binding, or action payload contains
+  `legacyType`, `NBButton`, or slug references (24 embedded-component rows,
+  15 page-content drafts, 26 published page revisions, 0 binding and 0 action
+  rows at inspection).
+- **Reusable components:** 24 definitions, none withdrawn, across 2 locales;
+  55 immutable revisions of which 47 are current (latest per
+  definition/locale); 0 reusable-component drafts at inspection. Published
+  content holds 69 component references; drafts hold 52.
+- **`legacyType`:** every reusable component revision (55/55, including all
+  47 current) contains exactly one top-level `source.legacyType`; no nested
+  legacy nodes were found. Current-revision distribution: Button 12,
+  Header 12, Text 8, NBButton 4, List 4, Media 2, NavBar 2, BibleVerse 2,
+  `title` 1. Each record pairs with its generic `type` in one of nine
+  observed mappings (button↔Button/NBButton, text↔Header/Text/BibleVerse/
+  `title`, stack↔List/NavBar, image↔Media). The lowercase `title` value is
+  nonstandard and needs explicit mapping review.
+- **Stored slug coupling (STORY-006):** all 55 revisions embed a
+  `source.page` page slug, and 24 revisions (18 Button, 6 NBButton; 16 of
+  them current) embed a `source.legacyProps.target` navigation page slug.
+  All embedded slugs resolved against current `Pages.Slug` at inspection, but
+  no schema constraint enforces this; renaming a page slug can silently
+  orphan stored navigation targets. Client adoption of the UUID management
+  lookup does not remove this stored dependence; retiring slug navigation
+  requires an approved migration of these stored values.
+
+External environments, producers, and consumers remain uninventoried; no raw
+content was copied into this document.
+
 ## Outstanding evidence and removal gates
 
 These are proposed gates, not an approved notice/monitoring policy:
@@ -110,7 +148,8 @@ These are proposed gates, not an approved notice/monitoring policy:
    legacy fields/effective-type conflicts, navigation targets and unresolved
    slugs, locale coverage, drafts, published and historical page revisions,
    reusable drafts/revisions, and nested nodes. No raw content or private data
-   belongs in this document. Current counts are **unknown**, not zero.
+   belongs in this document. The hosted development database is inventoried
+   above; counts for any other environment remain **unknown**, not zero.
 3. Approve current section/navigation representations and migration mappings.
    Quarantine ambiguous records; preserve unknown-component safety. Decide
    how immutable revision history is retained or superseded.

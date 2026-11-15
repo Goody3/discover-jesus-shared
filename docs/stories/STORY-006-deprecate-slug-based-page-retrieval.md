@@ -156,7 +156,11 @@ criteria remain to be decided.
   slug rename performed in the UI — issuing no legacy slug retrieval. Missing
   locale content 404s surfaced as empty states. This was a local development
   session against the hosted database, not a deployment.
-- Stored-content counts, external consumers, operational ownership, notice,
+- Stored-content counts for the hosted development database are recorded in
+  the [legacy retirement inventory](EPIC-003-legacy-retirement-inventory.md):
+  all 55 reusable component revisions embed a `source.page` slug and 24 embed
+  a slug navigation target, so stored content still depends on slugs even
+  after client migration. External consumers, operational ownership, notice,
   monitoring, and removal criteria remain unverified/unapproved. No deprecation
   signal or removal is included. Full story
   closure requires the remaining compatibility/removal gates.
