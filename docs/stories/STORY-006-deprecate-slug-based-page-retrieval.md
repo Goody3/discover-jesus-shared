@@ -164,17 +164,13 @@ be decided.
   the [legacy retirement inventory](EPIC-003-legacy-retirement-inventory.md):
   all 55 reusable component revisions embed a `source.page` slug and 24 embed
   a slug navigation target, so stored content still depends on slugs even
-  after client migration. The authoritative navigation UUID, the `source.page`
-  semantics, and any additional in-scope consumers remain unresolved. No
-  content migration or route/fallback removal is included.
-- A candidate UUID content-migration and slug-route removal plan is drafted
-  in the inventory for owner review. It does not resolve whether
-  backend `PublicId` and shared-contract `Page.id` are equivalent and does not
-  authorize a migration or route removal.
-- The owner has directed that no backward-compatibility period is needed
-  before production. A coordinated non-production cutover is proposed instead;
-  the owner selected backend `PublicId` for current backend/iOS navigation,
-  directed migration of all 55 revisions, and classified `source.page` as a
-  live page reference to migrate. Alignment with the separate shared OpenAPI
-  `Page.id` contract and the mechanics for preserving immutable revision
-  history remain unresolved.
+  after client migration. At inspection all 55 source-page values and all 24
+  navigation targets resolved to current pages; repeat the mapping check
+  immediately before migration. No content migration or route/fallback
+  removal is included.
+- On November 14, 2026, the owner approved backend `PublicId` as the shared
+  page identity, a linked migrated representation for each of the 55 immutable
+  revisions, and `source.page` as a live page reference. See
+  [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
+  Role and migration implementation details, fresh data validation, and
+  cutover checks remain open. No route or fallback removal is authorized.

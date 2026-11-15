@@ -1,6 +1,6 @@
 # STORY-017. Retire legacy component-type fallbacks
 
-- **Status:** Proposed; removal blocked on inventory and owner approval
+- **Status:** Proposed; role mappings and validation gates pending, removal blocked
 - **Epic:** [EPIC-003](../epics/EPIC-003-contract-integrity-across-products.md)
 - **Priority:** After contract-decoding verification
 - **Dependencies:** [STORY-016](STORY-016-verify-ios-contract-decoding.md)
@@ -72,11 +72,12 @@ does not authorize removal; see
 - Candidate per-role mappings and cutover checks are drafted in the
   inventory for owner review. They do not authorize payload changes or fallback
   removal; unmapped or semantically lossy roles remain blocked.
-- The owner has directed that no backward-compatibility period is needed
-  before production. The proposal therefore targets a coordinated
-  non-production cutover using generic component types with explicit semantic
-  roles, migrating all 55 stored revisions, and validating the known clients.
-  Exact role fields and history-preserving migration mechanics remain to be
-  defined.
+- On November 14, 2026, the owner approved a top-level `role` separate from
+  generic `type` and presentation `style`, and selected linked migrated
+  representations for all 55 immutable revisions while preserving the
+  originals. The exact role vocabulary, role-specific fields, and backend
+  link/current-revision mechanics remain open; see
+  [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
+  No data migration or fallback removal is authorized.
 - Removal remains blocked. In particular, changing only the classifier would
   miss navigation-bar assembly's direct `legacyType` dependency.

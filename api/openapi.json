@@ -296,7 +296,7 @@
       "PageId": {
         "name": "id",
         "in": "path",
-        "description": "Unique identifier of the page.",
+        "description": "Stable page UUID; equal to the backend Page.PublicId.",
         "required": true,
         "schema": {
           "type": "string",
@@ -314,7 +314,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
-            "description": "Unique identifier for this page.",
+            "description": "Stable page UUID; equal to the backend Page.PublicId and used by shared page-navigation references.",
             "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "slug": {
@@ -500,6 +500,7 @@
           "id": {
             "type": "string",
             "format": "uuid",
+            "description": "Stable page UUID; equal to the backend Page.PublicId and used by shared page-navigation references.",
             "example": "f47ac10b-58cc-4372-a567-0e02b2c3d479"
           },
           "slug": {

@@ -23,7 +23,7 @@ rationale.
 - [0001. Backend-managed component content store](0001-backend-managed-component-store.md) —
   proposed direction; storage and lifecycle details remain open.
 - [0002. Explicit page-navigation references](0002-explicit-page-navigation-references.md) —
-  proposed direction; destination identity and behavior remain open.
+  proposed direction; destination validation and runtime behavior remain open.
 - [0003. Coordinated backend-first web transition](0003-coordinated-backend-first-web-transition.md) —
   accepted non-production sequence; any future production transition requires
   separate approval.
@@ -32,3 +32,7 @@ rationale.
 - [0005. Separate contract verification boundaries](0005-separate-contract-verification-boundaries.md) —
   accepted backend-first verification while preserving distinct shared contracts;
   legacy retirement still requires inventory and approval.
+- [0006. UUID page identity and linked content migration](0006-uuid-page-identity-and-linked-content-migration.md) —
+  accepted backend `PublicId` identity, top-level semantic-role placement, and
+  linked migration of immutable revisions; role vocabulary and execution
+  mechanics remain open.

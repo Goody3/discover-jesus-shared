@@ -3,7 +3,7 @@
 - **Status:** Proposed; owner-reviewed model, implementation contract pending
 - **Date:** 2026-10-31
 - **Decision owners:** TBD
-- **Related decisions:** [0001. Backend-managed component content store](0001-backend-managed-component-store.md)
+- **Related decisions:** [0001. Backend-managed component content store](0001-backend-managed-component-store.md), [0006. UUID page identity and linked content migration](0006-uuid-page-identity-and-linked-content-migration.md)
 
 ## Context
 
@@ -54,11 +54,16 @@ UUID `Page.id` in shared OpenAPI as authoritative. Locale resolution uses that
 page identity in the requested locale, with no cross-locale fallback.
 `openExternalUrl` accepts HTTPS URLs only.
 
-This is a proposal, not an accepted technical contract. The accessible
-backend currently models pages with integer database IDs and slugs and routes
-page retrieval by slug; it does not implement this UUID navigation contract.
-The page schema also retains a string `id`; aligning it and the backend with the
-authoritative UUID page identity is follow-up implementation work.
+The owner approved that shared OpenAPI `Page.id`, dynamic page-schema `id`, and
+navigation `pageId` use the backend page `PublicId` UUID on November 14, 2026.
+The backend also has an integer database `Id`; it is not the shared page
+identity. This identity decision is recorded in
+[ADR 0006](0006-uuid-page-identity-and-linked-content-migration.md).
+
+This remains a proposed navigation contract: destination eligibility,
+runtime error details, and condition-expression semantics are not implemented
+or fully specified. The backend's UUID-addressed lookup does not by itself
+implement typed action validation or migrate stored navigation payloads.
 
 ## Alternatives considered
 
@@ -91,10 +96,8 @@ authoritative UUID page identity is follow-up implementation work.
   finds an unavailable or inaccessible page?
 - What expression language and evaluation semantics apply to the `condition`
   field on `navigateIf`?
-- How should the page-schema string `id` and backend integer IDs/slugs be
-  aligned with the authoritative UUID `Page.id` in OpenAPI?
-- How do backend page identity and routes migrate from integer IDs/slugs to
-  the shared UUID page identity?
+- What coordinated validation is required before removing the legacy slug
+  route and client slug fallback?
 - Which existing string targets are page IDs, routes, modal IDs, or external
   URLs, and what migration tooling is required before rollout? Legacy target
   support is not part of the proposed new contract.

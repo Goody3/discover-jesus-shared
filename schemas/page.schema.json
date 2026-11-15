@@ -8,7 +8,9 @@
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique identifier for the page."
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+      "description": "Stable UUID for the page; equal to the backend Page.PublicId and shared OpenAPI Page.id."
     },
 
     "title": {
@@ -78,6 +80,11 @@
         "type": {
           "type": "string",
           "description": "Component type (text, image, button, conditional, loop, etc.)"
+        },
+
+        "role": {
+          "type": "string",
+          "description": "Semantic role independent of the generic component type and presentation style. Canonical values and role-specific constraints remain to be defined."
         },
 
         "value": {
@@ -187,7 +194,7 @@
           "type": "string",
           "format": "uuid",
           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-          "description": "Stable UUID of the destination page for navigate and navigateIf actions."
+          "description": "Stable UUID of the destination page for navigate and navigateIf actions; equal to that page's backend PublicId and shared Page.id."
         },
 
         "modalId": {
