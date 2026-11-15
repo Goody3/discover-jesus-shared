@@ -68,6 +68,10 @@ boundaries remain as recorded in ADR 0005.
   allowed values, and treatment of ambiguous legacy records.
 - The backend must preserve source revision identities, create linked
   transformed representations, and make the active-revision behavior explicit.
+- A candidate backend implementation is documented in the
+  [EPIC-003 inventory](../../docs/stories/EPIC-003-legacy-retirement-inventory.md#backend-revision-history-evidence-and-candidate-migration-mechanics).
+  Its storage fields and indexes, deletion/cascade behavior, and returned
+  revision metadata are not yet approved.
 - Slug values remain user-facing identifiers unless separately approved.
 - Stored-content and consumer inventories must be refreshed before the actual
   migration and cutover.
@@ -76,9 +80,13 @@ boundaries remain as recorded in ADR 0005.
 
 - What canonical role values, role-specific properties, and allowed values
   preserve every inventoried rendering behavior?
-- What backend storage and API representation will link each migrated
-  revision to its immutable source, and how will the migrated current revision
-  be selected?
+- Should backend provenance use the candidate revision self-reference fields
+  and unique index, or a separate lineage record? How should component
+  deletion affect that audit trail?
+- What should `RevisionNumber` and `PublishedAt` mean on a migrated revision,
+  given that both are returned to clients?
+- How should the backend expose/select the migrated current representation
+  while preserving existing latest-revision behavior?
 - What exact client, backend, and content checks gate the non-production
   cutover, and are there additional active consumers?
 - What production transition plan will be required before a future launch?

@@ -214,6 +214,52 @@ revisions while preserving each original unchanged. The backend must still
 define the durable source link and current-revision selection. Unknown
 component handling remains required.
 
+#### Backend revision-history evidence and candidate migration mechanics
+
+The backend implementation at merged `dev` revision
+`75fbdbc8bb69acef24f0f636d693c589188e8259` stores each immutable reusable
+revision as a row with an integer `Id`, `DefinitionId`, `Locale`,
+`RevisionNumber`, `ContentJson`, and `PublishedAt`
+([model](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Models/ContentModels.cs#L70),
+[EF configuration](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Data/DiscoverJesusDbContext.cs#L96)).
+The database enforces uniqueness of `(DefinitionId, Locale, RevisionNumber)`.
+Normal publication allocates the next revision number. Published retrieval
+and page expansion select the highest revision number for a definition and
+locale
+([published lookup](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L150),
+[latest-content expansion](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L873)).
+The response exposes the selected revision number and `PublishedAt`. No
+revision-history endpoint or migration-lineage field was found in the inspected
+backend source. Deleting a component currently deletes its definition and
+cascades to its revision rows
+([delete operation](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L351)).
+
+**Candidate, not yet approved:** Prefer additive provenance on each new
+migrated revision: `MigratedFromRevisionId` (self-reference to the unchanged
+source revision), `MigrationBatchId`, and a stable `MigrationVersion`. A
+filtered unique index on `(MigratedFromRevisionId, MigrationVersion)` would
+make retries idempotent per transformation version while allowing a later,
+distinct transformation to be linked separately. Do not update source
+revision rows or their JSON. For each definition/locale, append one migrated
+copy per original in source revision-number order, assigning new, monotonically
+increasing revision numbers after the existing maximum. The backend's existing
+latest-revision query would then select the migrated copy of the former latest
+revision without changing that query, and later ordinary publication can
+allocate the next number.
+
+The migration should be idempotent by checking the source link and stable
+version before insert, execute in a bounded write-free/controlled window, and
+record a dry-run count and per-source outcome without exporting raw content.
+The backend must test source immutability, one-to-one lineage, revision-number
+ordering, latest retrieval and page expansion after migration, retry after
+partial failure, and a subsequent ordinary publish. Because revision number
+and `PublishedAt` are returned in responses, the migration must explicitly
+define their values for derived revisions and test the resulting contract.
+The existing component-delete cascade also needs a deliberate lineage policy:
+remove lineage only with an auditable component deletion, retain it outside the
+cascade, or revise deletion semantics. This is a shared-repo design proposal
+only; it does not change the backend model or authorize execution.
+
 ### STORY-006: candidate slug migration
 
 1. Use backend `PublicId` for page identity as directed by the owner. The
@@ -261,8 +307,10 @@ component handling remains required.
 
 - Define the precise role values, role-specific field names and allowed
   values, and mappings for every legacy property in the table.
-- Specify backend storage for the original-to-migrated revision link and how
-  consumers select the migrated current representation.
+- Review the candidate backend lineage fields, uniqueness rule, write window,
+  migration test requirements, revision-number/`PublishedAt` semantics, and
+  lineage deletion policy above; agree the durable link and idempotency key
+  before implementation.
 - Confirm any additional active consumers beyond the hosted development
   database, backend, web, and iOS, and define the cutover validation matrix.
 - Complete a fresh aggregate inventory and a dry-run mapping report before
