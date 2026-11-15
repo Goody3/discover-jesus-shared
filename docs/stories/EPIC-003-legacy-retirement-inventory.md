@@ -174,15 +174,15 @@ known clients at cutover.
 
 | Observed `type` / `source.legacyType` | Candidate treatment | Status and required review |
 | --- | --- | --- |
-| `button` / `Button` (12 current) | Keep generic `button`; map display text and action to explicit current fields. | Aggregate history shows `legacyProps.text` and `target`; confirm label field and preserve action semantics. |
-| `button` / `NBButton` (4 current) | Keep generic `button`; encode navigation-bar membership in top-level `role` and destination as `action.pageId` using backend `PublicId`. | Aggregate history shows `text`, `target`, and `attribute`; define the role and label field, then validate iOS navigation-bar grouping. |
-| `text` / `Text` (8 current) | Keep generic `text`; map display text to its current text field and size to style metadata. | Aggregate history shows `text` and `attribute` values `Small`, `Medium`, `Large`; define the normalized size vocabulary. |
-| `text` / `Header` (12 current) | Keep generic `text`; use top-level `role=heading` with level 1, 2, or 3. | Current records already use `style.role=heading`; aggregate `attribute` values are H1/H2/H3. Map these to numeric levels and verify rendering. |
-| `text` / `BibleVerse` (2 current) | Keep generic `text`; use top-level `role=scripture-reference` with explicit reference/version metadata and displayed text. | Current records already use `style.role=scripture-reference`; define canonical field names and preserve rendering. |
-| `text` / `title` (1 current) | Keep generic `text`; use a distinct top-level title role and move text/alignment/font size to current fields. | Aggregate history confirms `alignment`, `fontSize`, and `text`; define the title role and accepted style values before conversion. |
-| `stack` / `List` (4 current) | Keep generic `stack`; use top-level `role=list` and normalize `ol`/`ul` to an explicit list-style value. | Current records already use `style.role=list`; preserve item ordering and map `legacyProps.list` plus `attribute`. |
-| `stack` / `NavBar` (2 current) | Keep generic `stack`; use top-level `role=navigation` and model its child items explicitly. | Current records already use `style.role=navigation`; coordinate with the `NBButton` role and action mapping. |
-| `image` / `Media` (2 current) | Keep generic `image`; map URL to `src` and preserve descriptive text in an approved alternative-text field. | Aggregate history shows `url`, `text`, and `attribute=image`; confirm whether text is alt text or a caption before mapping. |
+| `button` / `Button` (12 current) | Keep generic `button`; map `legacyProps.text` to `value` and a validated internal `target` to `action.pageId`. No additional role is proposed for a generic button. | Confirm label semantics and preserve action behavior; do not infer a page from a target that fails the approved lookup. |
+| `button` / `NBButton` (4 current) | Keep generic `button`; propose `role=navigation-item`, map text to `value`, and map validated target to `action.pageId`. | `attribute=text` is not mapped. Verify how navigation-bar membership and parent/child grouping are represented before conversion. |
+| `text` / `Text` (8 current) | Keep generic `text`; map text to `value` and `attribute` to proposed `style.textSize` (`small`, `medium`, `large`). | All three size labels occur in this type's history. Approve lower-case normalization and confirm this is presentation-only. |
+| `text` / `Header` (12 current) | Keep generic `text`; propose `role=heading`, map text to `value`, and map H1/H2/H3 to `headingLevel` 1/2/3. | Existing `style.role=heading` is evidence, not the new field location. Validate heading hierarchy and rendering in both clients. |
+| `text` / `BibleVerse` (2 current) | Keep generic `text`; propose `role=scripture-reference`, map text to `value`, and retain `reference` and `version` as explicit semantic fields. | Field names and version semantics need approval. Do not fetch or alter verse text as part of this structural mapping. |
+| `text` / `title` (1 current) | Keep generic `text`; propose `role=title`, map text to `value`, and normalize `alignment`/`fontSize` into presentation style. | Only `alignment=center` and `fontSize=large` occur in this one record; this is insufficient to define the complete allowed values. |
+| `stack` / `List` (4 current) | Keep generic `stack`; propose `role=list`, map each string in `legacyProps.list` to an ordered text child, and map `ol`/`ul` to `style.listStyle=ordered`/`unordered`. | All four historical arrays contain three strings. Preserve order and confirm string-only items are complete; the meaning of `legacyProps.text` (for example, title or label) remains unknown. |
+| `stack` / `NavBar` (2 current) | Keep generic `stack`; propose `role=navigation`, with child buttons represented as `role=navigation-item`. | Current iOS groups NBButtons by matching labels; stored ownership/grouping must be verified before modeling the relationship as children. `text` meaning is unknown; `attribute` is empty in both records. |
+| `image` / `Media` (2 current) | Keep generic `image`; map URL to `src`. Consider mapping `text` to `altText` only if its meaning is confirmed. | `attribute=image` is observed, but `text` could be alternative text or a caption. Do not migrate it to either field without evidence. |
 
 Aggregate-only field inventory across the 55 revisions: `Button` has `text`
 and `target`; `NBButton` has `text`, `target`, and `attribute`; `Text` has
@@ -191,6 +191,20 @@ and `target`; `NBButton` has `text`, `target`, and `attribute`; `Text` has
 `NavBar` has `text` and `attribute`; `Media` has `text`, `url`, and
 `attribute`; and `title` has `text`, `alignment`, and `fontSize`. This is a
 property-name/count summary, not a complete semantic mapping.
+
+Additional aggregate value-shape evidence across history: `Header.attribute`
+contains H1 (6), H2 (4), and H3 (2); `Text.attribute` contains Small (2),
+Medium (4), and Large (2); `List.attribute` contains `ol` (2) and `ul` (2).
+Each of the four `List` revisions has three string items. `NBButton.attribute`
+is `text` in all six occurrences; `NavBar.attribute` is empty in both
+occurrences; `Media.attribute` is `image` in both. The sole `title` record has
+`alignment=center` and `fontSize=large`. These are observed values, not
+complete allowed-value sets.
+
+The table above is a field-mapping proposal, not an accepted payload contract.
+Only generic component types with a top-level `role` location are approved.
+Role values, field names, normalization rules, and any representation changes
+must be approved before adding schema constraints or migrating records.
 
 The owner selected a linked migrated representation for each of the 55
 revisions while preserving each original unchanged. The backend must still
