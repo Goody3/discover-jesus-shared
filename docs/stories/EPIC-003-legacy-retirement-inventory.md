@@ -35,7 +35,7 @@ versions, and request-log retention remain unknown.
 | Backend SQL integration tests | Test lookup after create, slug rename, missing page, and deletion. | Add parity tests for UUID management lookup; update route tests for the coordinated removal cutover. |
 | Web published preview and draft editor | Already use `publicId` for published and draft page-content routes. Preview resolves UUIDs and publication status from page summaries. | Preserve existing locale, draft lifecycle, and published-content behavior; no route substitution needed. |
 | iOS page list and published-page loading | Uses `GET /api/pages` for summaries and public UUID for published content. No slug-detail HTTP call found in app source. | Keep these operations; do not confuse retaining a `slug` field with consuming slug-detail retrieval. |
-| iOS navigation | `targetPage` prefers a matching `action.pageId`, then uses case-insensitive `source.legacyProps.target`. If a supplied UUID has no matching summary, slug fallback is still attempted. | Migrate stored destinations to typed UUID actions before removing fallback; malformed UUID decoding already fails. Missing UUID remains an intentional decoder compatibility gap. |
+| iOS navigation | `targetPage` compares `action.pageId` to `PageSummary.publicId`, then uses case-insensitive `source.legacyProps.target`. If a supplied UUID has no matching summary, slug fallback is still attempted. | The current backend/iOS runtime therefore resolves typed destinations against backend `PublicId`. The shared navigation decision instead names shared OpenAPI `Page.id`; align or explicitly separate these contracts before migration. Malformed UUID decoding already fails; a missing UUID remains an intentional decoder compatibility gap. |
 | Generated/pinned contracts and examples | Backend OpenAPI, generated web types, and vendored web/iOS snapshots include the slug route. Synthetic fixtures test slug navigation fallback. | Refresh identified contract inputs intentionally after approved changes. Historical snapshots do not prove an active runtime caller. Preserve regressions until migration gates pass. |
 
 ### Source references
@@ -48,7 +48,7 @@ versions, and request-log retention remain unknown.
   and [integration tests](https://github.com/Goody3/discover-jesus-backend/blob/6c3d4ccc1560d02d0f34cc97ae7493fc228c7268/Tests/ContentEndpointIntegrationTests.cs#L43).
 - [iOS summary loading](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/ContentView.swift#L130),
   [UUID delivery URL](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/ContentView.swift#L224),
-  and [navigation precedence](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/PageContentLogic.swift#L68).
+  and [navigation UUID/slug resolution](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/PageContentLogic.swift#L68).
 
 ### Approved additive migration increment
 
@@ -186,10 +186,13 @@ required.
 
 ### STORY-006: candidate slug migration
 
-1. Decide the authoritative UUID used for navigation. The shared navigation
-   proposal uses UUID `Page.id`, while backend management exposes `PublicId`;
-   their equivalence is not established. Specify the mapping or align the
-   contracts before changing navigation payloads.
+1. The inspected iOS client already matches `action.pageId` to
+   `PageSummary.publicId`, and the backend uses that UUID for published and
+   management lookup. Use backend `PublicId` as the candidate identity for
+   this runtime unless the owner directs otherwise. The separate shared
+   OpenAPI `Page.id` contract has not been shown to use the same identifiers;
+   decide whether to align it or explicitly keep it separate before changing
+   shared contracts.
 2. Resolve the 24 stored `source.legacyProps.target` values, convert confirmed
    internal destinations to the approved typed navigation action, and preserve
    other action semantics. Fix or explicitly discard unresolved/non-page
@@ -230,8 +233,9 @@ required.
   web, and iOS) and whether any other active stores or clients must be included.
 - Approve, revise, or reject each candidate component mapping, especially
   `NBButton`, `Header`, `BibleVerse`, `List`, `NavBar`, and lowercase `title`.
-- Decide whether shared `Page.id` and backend `PublicId` are the same
-  authoritative navigation identity, or specify the approved mapping.
+- Confirm backend `PublicId` as the page identity for current iOS/backend
+  navigation, and decide whether the separate shared OpenAPI `Page.id` is to
+  be aligned or remain explicitly distinct.
 - Confirm whether `source.page` is provenance or a live dependency, and whether
   historical immutable revisions must remain readable after cutover.
 - Confirm the cutover validation scope and that forward-fix is the recovery
