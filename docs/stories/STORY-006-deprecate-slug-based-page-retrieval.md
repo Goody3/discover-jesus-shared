@@ -173,4 +173,8 @@ be decided.
   authorize a migration or route removal.
 - The owner has directed that no backward-compatibility period is needed
   before production. A coordinated non-production cutover is proposed instead;
-  UUID identity and content migration decisions still require review.
+  the owner selected backend `PublicId` for current backend/iOS navigation,
+  directed migration of all 55 revisions, and classified `source.page` as a
+  live page reference to migrate. Alignment with the separate shared OpenAPI
+  `Page.id` contract and the mechanics for preserving immutable revision
+  history remain unresolved.

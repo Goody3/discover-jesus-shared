@@ -129,11 +129,12 @@ a point-in-time snapshot of that single database and authorize nothing.
 - **Stored slug coupling (STORY-006):** all 55 revisions embed a
   `source.page` page slug, and 24 revisions (18 Button, 6 NBButton; 16 of
   them current) embed a `source.legacyProps.target` navigation page slug.
+  The source-page field has 7 distinct slug values; navigation targets have 6.
   All embedded slugs resolved against current `Pages.Slug` at inspection, but
   no schema constraint enforces this; renaming a page slug can silently
   orphan stored navigation targets. Client adoption of the UUID management
   lookup does not remove this stored dependence; retiring slug navigation
-  requires an approved migration of these stored values.
+  requires migration of these stored values.
 
 External environments, producers, and consumers remain uninventoried; no raw
 content was copied into this document.
@@ -143,13 +144,17 @@ content was copied into this document.
 **Status:** Proposal only; not an approved contract, migration plan, deprecation
 notice, or authorization to change data or remove legacy behavior.
 
-**Owner direction:** Because the platform is not yet in production, a
-backward-compatibility period is not required for this work. The proposal
-therefore uses a coordinated breaking pre-production cutover rather than a
-deprecation window or long-lived fallback. This does not authorize discarding
-stored content: current data must be migrated or explicitly identified for
-disposal, and the known clients must be updated and validated. Any future
-production rollout still needs its own approved transition plan.
+**Owner-approved direction (2026-11-14):** No backward-compatibility period is
+required before production. Scope the cutover to the hosted development
+database, backend, web, and iOS, plus any additional consumers the owner names.
+Use backend `PublicId` for current backend/iOS page navigation; choose generic
+component types with explicit semantic roles; migrate all 55 stored component
+revisions; and treat `source.page` as a live page reference to migrate to the
+approved UUID. These directions do not yet define the final schema fields,
+resolve how shared OpenAPI `Page.id` relates to backend `PublicId`, or specify
+how to preserve immutable revision history. No data or code changes are
+authorized by this proposal. Any future production rollout needs a separate
+transition plan.
 
 The mappings below are candidates based on the hosted development database
 snapshot and checked-in shared schemas. The shared component schema defines
@@ -164,48 +169,52 @@ the active content, and validate both known clients at cutover.
 
 | Observed `type` / `source.legacyType` | Candidate treatment | Status and required review |
 | --- | --- | --- |
-| `button` / `Button` (12 current) | Keep `button` as the generic type; map text and action fields explicitly. | Candidate only. Determine how `legacyProps.text`, `attribute`, and other properties map; validate iOS and web behavior. |
-| `button` / `NBButton` (4 current) | Keep button behavior and represent navigation-bar membership/role explicitly, separately from generic button type. | Blocked. Current shared component schema has no navigation-bar item role; do not erase this distinction or infer it from layout. |
-| `text` / `Text` (8 current) | Keep `text`; map displayed value explicitly. | Candidate only. Confirm `legacyProps` and binding semantics preserve the current rendered text. |
-| `text` / `Header` (12 current) | Keep `text` with an explicit heading role and level. | Blocked. The shared component schema has no heading role/level; resolve `legacyProps.attribute`, values, and styling before conversion. |
-| `text` / `BibleVerse` (2 current) | Preserve Bible-verse semantics and reference/version as structured data. | Blocked. Do not reduce to plain text until the canonical representation and rendering behavior are approved. |
-| `text` / `title` (1 current) | Quarantine for manual classification; do not normalize automatically. | Blocked. The lowercase legacy value is nonstandard and its intended role is unconfirmed. |
-| `stack` / `List` (4 current) | Preserve list role and item order; use a generic layout only if list semantics remain representable. | Blocked. The shared component schema has no list type; ordered/unordered behavior and marker metadata need mapping. |
-| `stack` / `NavBar` (2 current) | Preserve navigation-bar role and its child-item relationship explicitly. | Blocked. A generic stack alone does not establish navigation behavior; coordinate with the `NBButton` mapping. |
-| `image` / `Media` (2 current) | Keep `image` if the media source and presentation properties map without loss. | Candidate only. Verify the source/asset mapping and required legacy properties. |
+| `button` / `Button` (12 current) | Keep generic `button`; map display text and action to explicit current fields. | Aggregate history shows `legacyProps.text` and `target`; confirm label field and preserve action semantics. |
+| `button` / `NBButton` (4 current) | Keep generic `button`; encode navigation-bar membership as a semantic role and destination as `action.pageId` using backend `PublicId`. | Aggregate history shows `text`, `target`, and `attribute`; define the role and label field, then validate iOS navigation-bar grouping. |
+| `text` / `Text` (8 current) | Keep generic `text`; map display text to its current text field and size to style metadata. | Aggregate history shows `text` and `attribute` values `Small`, `Medium`, `Large`; define the normalized size vocabulary. |
+| `text` / `Header` (12 current) | Keep generic `text`; use role `heading` with level 1, 2, or 3. | Current records already use `style.role=heading`; aggregate `attribute` values are H1/H2/H3. Map these to numeric levels and verify rendering. |
+| `text` / `BibleVerse` (2 current) | Keep generic `text`; use role `scripture-reference` with explicit reference/version metadata and displayed text. | Current records already use `style.role=scripture-reference`; define canonical field names and preserve rendering. |
+| `text` / `title` (1 current) | Keep generic `text`; use a distinct title role and move text/alignment/font size to current fields. | Aggregate history confirms `alignment`, `fontSize`, and `text`; define the title role and accepted style values before conversion. |
+| `stack` / `List` (4 current) | Keep generic `stack`; use role `list` and normalize `ol`/`ul` to an explicit list-style value. | Current records already use `style.role=list`; preserve item ordering and map `legacyProps.list` plus `attribute`. |
+| `stack` / `NavBar` (2 current) | Keep generic `stack`; use role `navigation` and model its child items explicitly. | Current records already use `style.role=navigation`; coordinate with the `NBButton` role and action mapping. |
+| `image` / `Media` (2 current) | Keep generic `image`; map URL to `src` and preserve descriptive text in an approved alternative-text field. | Aggregate history shows `url`, `text`, and `attribute=image`; confirm whether text is alt text or a caption before mapping. |
 
-Proposed process: decide the replacement representation for each role; update
-the backend/web/iOS producers and consumers in the agreed non-production
-sequence; migrate the active drafts and published content; then remove
-`legacyType` interpretation and validate all known client flows. Historical
-immutable revisions may remain stored as archival records but are not promised
-to remain readable by the new client. Alternatively, if the owner wants them
-deliverable, migrate them too. Do not rewrite immutable revisions until the
-owner chooses one of these dispositions. Unknown-component handling remains
-required.
+Aggregate-only field inventory across the 55 revisions: `Button` has `text`
+and `target`; `NBButton` has `text`, `target`, and `attribute`; `Text` has
+`text` and `attribute`; `Header` has `text` and `attribute`; `BibleVerse` has
+`text`, `reference`, and `version`; `List` has `text`, `list`, and `attribute`;
+`NavBar` has `text` and `attribute`; `Media` has `text`, `url`, and
+`attribute`; and `title` has `text`, `alignment`, and `fontSize`. This is a
+property-name/count summary, not a complete semantic mapping.
+
+The owner selected migration of all 55 revisions. Because those revisions are
+treated as immutable history, implementation must preserve their historical
+identity and auditability while producing migrated representations. The
+migration mechanism (in-place transformation with an audit artifact versus
+new migrated revisions linked to originals) still needs an explicit design.
+Unknown-component handling remains required.
 
 ### STORY-006: candidate slug migration
 
-1. The inspected iOS client already matches `action.pageId` to
+1. Use backend `PublicId` for current backend/iOS navigation as directed by
+   the owner. The inspected iOS client matches `action.pageId` to
    `PageSummary.publicId`, and the backend uses that UUID for published and
-   management lookup. Use backend `PublicId` as the candidate identity for
-   this runtime unless the owner directs otherwise. The separate shared
-   OpenAPI `Page.id` contract has not been shown to use the same identifiers;
-   decide whether to align it or explicitly keep it separate before changing
-   shared contracts.
+   management lookup. The separate shared OpenAPI `Page.id` contract has not
+   been shown to use the same identifiers; decide whether to align it or
+   explicitly keep it separate before changing shared contracts.
 2. Resolve the 24 stored `source.legacyProps.target` values, convert confirmed
    internal destinations to the approved typed navigation action, and preserve
    other action semantics. Fix or explicitly discard unresolved/non-page
    targets; do not infer destinations from string shape alone.
-3. Decide whether `source.page` is required as provenance or a live dependency.
-   If it is only provenance, retain it as inert metadata or remove it from
-   active content after producer/consumer verification; if it is a live page
-   reference, replace it using the approved stable identity.
-4. Migrate active drafts and published content before switching known
-   consumers. Historical immutable revisions need not remain readable under
-   the new format unless the owner explicitly requires that. The legacy slug
-   route and client fallback can then be removed in the coordinated
-   non-production cutover; no deprecation period is proposed.
+3. Treat `source.page` as a live page reference as directed by the owner.
+   Resolve all 55 values and migrate each to backend `PublicId`, after
+   validating the agreed relationship between reusable-component provenance
+   and owning page.
+4. Migrate all 55 revisions as directed by the owner, with a mechanism that
+   preserves revision identity/auditability. Migrate active drafts and
+   published content before switching known consumers. The legacy slug route
+   and client fallback can then be removed in the coordinated non-production
+   cutover; no deprecation period is proposed.
 5. Validate the backend, web, and iOS against the migrated content and remove
    all legacy-route callers in the same planned transition. Keep the separate
    user-facing page slug field/URLs unless separately approved.
@@ -231,13 +240,14 @@ required.
 
 - Confirm the known pre-production scope (hosted development database, backend,
   web, and iOS) and whether any other active stores or clients must be included.
-- Approve, revise, or reject each candidate component mapping, especially
-  `NBButton`, `Header`, `BibleVerse`, `List`, `NavBar`, and lowercase `title`.
-- Confirm backend `PublicId` as the page identity for current iOS/backend
-  navigation, and decide whether the separate shared OpenAPI `Page.id` is to
-  be aligned or remain explicitly distinct.
-- Confirm whether `source.page` is provenance or a live dependency, and whether
-  historical immutable revisions must remain readable after cutover.
+- Define the precise schema field names/allowed values for the approved
+  generic-type semantic roles and the legacy property mappings in the table.
+- Decide whether the shared OpenAPI `Page.id` is to be aligned with backend
+  `PublicId` or remain explicitly distinct.
+- Choose how to migrate all immutable revisions while preserving their
+  identity and auditability (for example, preserve originals as archival
+  records and write a linked migrated representation, or explicitly authorize
+  an audited in-place rewrite).
 - Confirm the cutover validation scope and that forward-fix is the recovery
   approach for this non-production transition.
 

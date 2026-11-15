@@ -74,6 +74,9 @@ does not authorize removal; see
   removal; unmapped or semantically lossy roles remain blocked.
 - The owner has directed that no backward-compatibility period is needed
   before production. The proposal therefore targets a coordinated
-  non-production cutover after active data migration and known-client checks.
+  non-production cutover using generic component types with explicit semantic
+  roles, migrating all 55 stored revisions, and validating the known clients.
+  Exact role fields and history-preserving migration mechanics remain to be
+  defined.
 - Removal remains blocked. In particular, changing only the classifier would
   miss navigation-bar assembly's direct `legacyType` dependency.
