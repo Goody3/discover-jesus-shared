@@ -3,13 +3,15 @@
 - **Date:** 2026-11-14
 - **Status:** Source inventory verified; additive UUID management lookup and
   web migration approved and merged on November 14, 2026, with passing `dev`
-  CI and a same-day live client/backend integration session.
-  Retirement policy, stored-content and external-consumer inventories remain
+  CI and a same-day live client/backend integration session. The hosted
+  development database's stored content is inventoried below.
+  Pre-production migration mappings and the in-scope consumer inventory remain
   incomplete. No removal is authorized by this document.
 - **Stories:** [STORY-006](STORY-006-deprecate-slug-based-page-retrieval.md),
   [STORY-017](STORY-017-retire-legacy-component-type-fallbacks.md)
-- **Boundaries:** [ADR 0005](../../architecture/decisions/0005-separate-contract-verification-boundaries.md)
-  and [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md).
+- **Boundaries:** [ADR 0005](../../architecture/decisions/0005-separate-contract-verification-boundaries.md),
+  [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md),
+  and the owner-approved [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
 
 ## Evidence scope
 
@@ -19,10 +21,11 @@ The source trees inspected match these merged `dev` revisions:
 - Web: `20a6044acc99df65afe1f6bb3ce2e195fffe33dd`.
 - iOS: `57f91588e41c7fd69580a0b6c65896879b5e38cd`.
 
-This is a source inventory, not evidence of runtime usage, a database audit,
-or a list of every consumer. No database or live endpoint was queried.
-Operational owners, imports/scripts outside these repositories, Android or
-other clients, deployed versions, and request-log retention remain unknown.
+The source revisions below establish code-level findings, not runtime usage
+or a list of every consumer. A separate read-only audit of the hosted
+development database is recorded later in this document. Operational owners,
+imports/scripts outside these repositories, Android or other clients, deployed
+versions, and request-log retention remain unknown.
 
 ## STORY-006: page lookup and navigation
 
@@ -30,10 +33,10 @@ other clients, deployed versions, and request-log retention remain unknown.
 | --- | --- | --- |
 | Web management page loading | `App` selects a page by slug and calls `GetPage`. Needs `id`, `publicId`, `slug`, `title`, `isPublished`, and inline `components` with integer IDs, sort order, props, bindings, and actions. Supports unpublished pages and management edits/deletes. | Published-content delivery is not a replacement. Propose a UUID-addressed management lookup returning the existing `PageResponse`. |
 | Backend page creation | `CreatePage` returns a `Location` header pointing to `/api/pages/{slug}` as well as a `PageSummary` body. | After a UUID management lookup exists, coordinate changing `Location` to it; do not leave a dangling slug link on removal. |
-| Backend SQL integration tests | Test lookup after create, slug rename, missing page, and deletion. | Add parity tests for UUID management lookup; retain explicit slug compatibility tests until approved removal. |
+| Backend SQL integration tests | Test lookup after create, slug rename, missing page, and deletion. | Add parity tests for UUID management lookup; update route tests for the coordinated removal cutover. |
 | Web published preview and draft editor | Already use `publicId` for published and draft page-content routes. Preview resolves UUIDs and publication status from page summaries. | Preserve existing locale, draft lifecycle, and published-content behavior; no route substitution needed. |
 | iOS page list and published-page loading | Uses `GET /api/pages` for summaries and public UUID for published content. No slug-detail HTTP call found in app source. | Keep these operations; do not confuse retaining a `slug` field with consuming slug-detail retrieval. |
-| iOS navigation | `targetPage` prefers a matching `action.pageId`, then uses case-insensitive `source.legacyProps.target`. If a supplied UUID has no matching summary, slug fallback is still attempted. | Migrate stored destinations to typed UUID actions before removing fallback; malformed UUID decoding already fails. Missing UUID remains an intentional decoder compatibility gap. |
+| iOS navigation | `targetPage` compares `action.pageId` to `PageSummary.publicId`, then uses case-insensitive `source.legacyProps.target`. If a supplied UUID has no matching summary, slug fallback is still attempted. | The current backend/iOS runtime resolves typed destinations against backend `PublicId`. The owner approved that shared OpenAPI `Page.id`, dynamic page-schema `id`, and `action.pageId` use this same UUID; the slug fallback remains until stored content and clients are migrated. Malformed UUID decoding already fails; a missing UUID remains an intentional decoder compatibility gap. |
 | Generated/pinned contracts and examples | Backend OpenAPI, generated web types, and vendored web/iOS snapshots include the slug route. Synthetic fixtures test slug navigation fallback. | Refresh identified contract inputs intentionally after approved changes. Historical snapshots do not prove an active runtime caller. Preserve regressions until migration gates pass. |
 
 ### Source references
@@ -46,13 +49,13 @@ other clients, deployed versions, and request-log retention remain unknown.
   and [integration tests](https://github.com/Goody3/discover-jesus-backend/blob/6c3d4ccc1560d02d0f34cc97ae7493fc228c7268/Tests/ContentEndpointIntegrationTests.cs#L43).
 - [iOS summary loading](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/ContentView.swift#L130),
   [UUID delivery URL](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/ContentView.swift#L224),
-  and [navigation precedence](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/PageContentLogic.swift#L68).
+  and [navigation UUID/slug resolution](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/DiscoverJesus/DiscoverJesus/PageContentLogic.swift#L68).
 
 ### Approved additive migration increment
 
 On November 14, 2026, the owner approved the UUID management lookup and web
-migration while retaining all legacy compatibility. This does not approve the
-outstanding deprecation/removal policy or certify complete consumer coverage.
+migration while retaining existing legacy behavior for that increment. It did
+not approve route or fallback removal or certify complete consumer coverage.
 
 1. Add `GET /api/pages/by-public-id/{pageId}` with a UUID route constraint,
    distinct operation ID, and the same `PageResponse` shape and management
@@ -62,9 +65,9 @@ outstanding deprecation/removal policy or certify complete consumer coverage.
 3. Generate/verify backend metadata, update the web's pinned contract, and
    switch web management selection/loading to `publicId`. Update creation
    `Location` once the replacement is available.
-4. Retain the slug route and iOS navigation fallback. Deprecation signals,
-   notice period, monitoring window, and final removal are separate approvals.
-   Do not infer them from permission to add a replacement.
+4. Retain the slug route and iOS navigation fallback for this additive
+   increment. The later pre-production cutover is a separate coordinated
+   change and is not authorized by this approval.
 
 The backend implementation is committed at
 `f0466e0797e541784ce077245005c62228529361`. The web pins that input and uses
@@ -99,29 +102,250 @@ the inspected merged baseline, not a claim that those migrations are deployed.
   and [node validation](https://github.com/Goody3/discover-jesus-backend/blob/6c3d4ccc1560d02d0f34cc97ae7493fc228c7268/Services/ReusableContentService.cs#L991).
 - [Historical iOS standardization proposal](https://github.com/Goody3/discover-jesus-ios/blob/57f91588e41c7fd69580a0b6c65896879b5e38cd/Component-Attribute-Standardization-Plan.md).
 
+## Stored-content inventory: hosted development database
+
+On November 14, 2026, read-only aggregate queries ran against the platform's
+hosted development SQL Server database, whose schema matched the three
+checked-in backend EF Core migrations. This is the only platform content
+store known to the owner today; no production environment exists. Counts are
+a point-in-time snapshot of that single database and authorize nothing.
+
+- **Pages:** 13, all published. Page slugs exist only in `Pages.Slug`; no
+  page-section, embedded-component, binding, or action payload contains
+  `legacyType`, `NBButton`, or slug references (24 embedded-component rows,
+  15 page-content drafts, 26 published page revisions, 0 binding and 0 action
+  rows at inspection).
+- **Reusable components:** 24 definitions, none withdrawn, across 2 locales;
+  55 immutable revisions of which 47 are current (latest per
+  definition/locale); 0 reusable-component drafts at inspection. Published
+  content holds 69 component references; drafts hold 52.
+- **`legacyType`:** every reusable component revision (55/55, including all
+  47 current) contains exactly one top-level `source.legacyType`; no nested
+  legacy nodes were found. Current-revision distribution: Button 12,
+  Header 12, Text 8, NBButton 4, List 4, Media 2, NavBar 2, BibleVerse 2,
+  `title` 1. Each record pairs with its generic `type` in one of nine
+  observed mappings (button↔Button/NBButton, text↔Header/Text/BibleVerse/
+  `title`, stack↔List/NavBar, image↔Media). The lowercase `title` value is
+  nonstandard and needs explicit mapping review.
+- **Stored slug coupling (STORY-006):** all 55 revisions embed a
+  `source.page` page slug, and 24 revisions (18 Button, 6 NBButton; 16 of
+  them current) embed a `source.legacyProps.target` navigation page slug.
+  The source-page field has 7 distinct slug values; navigation targets have 6.
+  All embedded slugs resolved against current `Pages.Slug` at inspection, but
+  no schema constraint enforces this; renaming a page slug can silently
+  orphan stored navigation targets. Client adoption of the UUID management
+  lookup does not remove this stored dependence; retiring slug navigation
+  requires migration of these stored values.
+
+External environments, producers, and consumers remain uninventoried; no raw
+content was copied into this document.
+
+## Pre-production cutover and migration plan
+
+**Status:** Approved directions are recorded in
+[ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md).
+Role vocabulary, role-specific schema constraints, migration implementation
+details, validation gates, and authorization to execute the data migration or
+remove legacy behavior remain open.
+
+**Owner-approved direction (2026-11-14):** No backward-compatibility period is
+required before production. Scope the cutover to the hosted development
+database, backend, web, and iOS, plus any additional consumers the owner names.
+Use backend `PublicId` as the shared page identity; place semantic roles in a
+top-level `role`; migrate all 55 stored component revisions by preserving each
+original and creating a linked migrated representation; and treat `source.page`
+as a live page reference to migrate to the same UUID. Exact role values and
+role-specific fields, backend link storage and active-revision selection,
+validation gates, and additional consumers remain to be defined. No data
+migration or legacy-behavior removal is authorized by this direction. Any
+future production rollout needs a separate transition plan.
+
+The mappings below are candidates based on the hosted development database
+snapshot and checked-in shared schemas. The shared component schema defines
+generic types (`text`, `image`, `button`, `stack`, and others) and now exposes
+the approved top-level `role` field, but does not define role values or their
+property mappings. In addition, the iOS source inventory confirms
+`source.legacyType` can take precedence over `type`. Therefore an observed
+pair is not proof that removing the field preserves behavior; define the
+replacement behavior first, migrate the active content, and validate both
+known clients at cutover.
+
+### STORY-017: candidate component mapping
+
+| Observed `type` / `source.legacyType` | Candidate treatment | Status and required review |
+| --- | --- | --- |
+| `button` / `Button` (12 current) | Keep generic `button`; map `legacyProps.text` to `value` and a validated internal `target` to `action.pageId`. No additional role is proposed for a generic button. | Confirm label semantics and preserve action behavior; do not infer a page from a target that fails the approved lookup. |
+| `button` / `NBButton` (4 current) | Keep generic `button`; propose `role=navigation-item`, map text to `value`, and map validated target to `action.pageId`. | `attribute=text` is not mapped. Verify how navigation-bar membership and parent/child grouping are represented before conversion. |
+| `text` / `Text` (8 current) | Keep generic `text`; map text to `value` and `attribute` to proposed `style.textSize` (`small`, `medium`, `large`). | All three size labels occur in this type's history. Approve lower-case normalization and confirm this is presentation-only. |
+| `text` / `Header` (12 current) | Keep generic `text`; propose `role=heading`, map text to `value`, and map H1/H2/H3 to `headingLevel` 1/2/3. | Existing `style.role=heading` is evidence, not the new field location. Validate heading hierarchy and rendering in both clients. |
+| `text` / `BibleVerse` (2 current) | Keep generic `text`; propose `role=scripture-reference`, map text to `value`, and retain `reference` and `version` as explicit semantic fields. | Field names and version semantics need approval. Do not fetch or alter verse text as part of this structural mapping. |
+| `text` / `title` (1 current) | Keep generic `text`; propose `role=title`, map text to `value`, and normalize `alignment`/`fontSize` into presentation style. | Only `alignment=center` and `fontSize=large` occur in this one record; this is insufficient to define the complete allowed values. |
+| `stack` / `List` (4 current) | Keep generic `stack`; propose `role=list`, map each string in `legacyProps.list` to an ordered text child, and map `ol`/`ul` to `style.listStyle=ordered`/`unordered`. | All four historical arrays contain three strings. Preserve order and confirm string-only items are complete; the meaning of `legacyProps.text` (for example, title or label) remains unknown. |
+| `stack` / `NavBar` (2 current) | Keep generic `stack`; propose `role=navigation`, with child buttons represented as `role=navigation-item`. | Current iOS groups NBButtons by matching labels; stored ownership/grouping must be verified before modeling the relationship as children. `text` meaning is unknown; `attribute` is empty in both records. |
+| `image` / `Media` (2 current) | Keep generic `image`; map URL to `src`. Consider mapping `text` to `altText` only if its meaning is confirmed. | `attribute=image` is observed, but `text` could be alternative text or a caption. Do not migrate it to either field without evidence. |
+
+Aggregate-only field inventory across the 55 revisions: `Button` has `text`
+and `target`; `NBButton` has `text`, `target`, and `attribute`; `Text` has
+`text` and `attribute`; `Header` has `text` and `attribute`; `BibleVerse` has
+`text`, `reference`, and `version`; `List` has `text`, `list`, and `attribute`;
+`NavBar` has `text` and `attribute`; `Media` has `text`, `url`, and
+`attribute`; and `title` has `text`, `alignment`, and `fontSize`. This is a
+property-name/count summary, not a complete semantic mapping.
+
+Additional aggregate value-shape evidence across history: `Header.attribute`
+contains H1 (6), H2 (4), and H3 (2); `Text.attribute` contains Small (2),
+Medium (4), and Large (2); `List.attribute` contains `ol` (2) and `ul` (2).
+Each of the four `List` revisions has three string items. `NBButton.attribute`
+is `text` in all six occurrences; `NavBar.attribute` is empty in both
+occurrences; `Media.attribute` is `image` in both. The sole `title` record has
+`alignment=center` and `fontSize=large`. These are observed values, not
+complete allowed-value sets.
+
+On November 14, 2026, the owner accepted the table as a candidate mapping
+baseline and directed that unresolved items remain blocked. This does not make
+the table a final payload contract: generic component types and the top-level
+`role` location are approved directions, while role values, field names,
+normalization rules, and representation changes remain candidates. Do not add
+role enums or migrate records until the final schema and all required mappings
+are approved.
+
+The owner selected a linked migrated representation for each of the 55
+revisions while preserving each original unchanged. The backend must still
+define the durable source link and current-revision selection. Unknown
+component handling remains required.
+
+#### Backend revision-history evidence and candidate migration mechanics
+
+The backend implementation at merged `dev` revision
+`75fbdbc8bb69acef24f0f636d693c589188e8259` stores each immutable reusable
+revision as a row with an integer `Id`, `DefinitionId`, `Locale`,
+`RevisionNumber`, `ContentJson`, and `PublishedAt`
+([model](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Models/ContentModels.cs#L70),
+[EF configuration](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Data/DiscoverJesusDbContext.cs#L96)).
+The database enforces uniqueness of `(DefinitionId, Locale, RevisionNumber)`.
+Normal publication allocates the next revision number. Published retrieval
+and page expansion select the highest revision number for a definition and
+locale
+([published lookup](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L150),
+[latest-content expansion](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L873)).
+The response exposes the selected revision number and `PublishedAt`. No
+revision-history endpoint or migration-lineage field was found in the inspected
+backend source. Deleting a component currently deletes its definition and
+cascades to its revision rows
+([delete operation](https://github.com/Goody3/discover-jesus-backend/blob/75fbdbc8bb69acef24f0f636d693c589188e8259/Services/ReusableContentService.cs#L351)).
+
+**Owner-approved direction (November 14, 2026):** Store migration provenance
+in a separate, backend-internal lineage table with source revision ID,
+migrated revision ID, stable transformation version, batch ID, and migration
+timestamp. Do not add a public API field for lineage. Do not update source
+revision rows or their JSON.
+
+**Candidate implementation detail:** Enforce one derived row per source and
+transformation version with a unique key on `(SourceRevisionId,
+MigrationVersion)`. For each definition/locale, append one migrated copy per
+original in source revision-number order, assigning new, monotonically
+increasing revision numbers after the existing maximum. Set each derived
+revision's `PublishedAt` to migration time; retain the original revision's
+`PublishedAt` unchanged. The backend's existing latest-revision query would
+then select the migrated copy of the former latest revision without changing
+that query, and later ordinary publication can allocate the next number.
+Confirm exact constraints and transaction sequence in the backend design.
+
+The migration should be idempotent by checking the source link and stable
+version before insert, execute in a bounded write-free/controlled window, and
+record a dry-run count and per-source outcome without exporting raw content.
+The backend must test source immutability, one-to-one lineage, revision-number
+ordering, latest retrieval and page expansion after migration, retry after
+partial failure, and a subsequent ordinary publish. Because revision number
+and `PublishedAt` are returned in responses; test the approved derived values
+and preserve the source response/history. The owner selected the existing
+component hard-delete behavior: delete lineage rows in the same transaction
+when the owning definition and its revision history are explicitly deleted.
+Migration itself must not delete or alter source rows. This is a
+shared-repo design decision only; it does not change the backend model or
+authorize execution.
+
+### STORY-006: candidate slug migration
+
+1. Use backend `PublicId` for page identity as directed by the owner. The
+   shared OpenAPI `Page.id`, dynamic page-schema `id`, and `action.pageId` now
+   document this identity. The inspected iOS client matches `action.pageId` to
+   `PageSummary.publicId`, and the backend has UUID-addressed published and
+   management lookups.
+2. Resolve the 24 stored `source.legacyProps.target` values, convert confirmed
+   internal destinations to the approved typed navigation action, and preserve
+   other action semantics. Fix or explicitly discard unresolved/non-page
+   targets; do not infer destinations from string shape alone.
+3. Treat `source.page` as a live page reference as directed by the owner.
+   Resolve all 55 values and migrate each to backend `PublicId`. At inspection,
+   all 55 resolved across 7 distinct slugs; repeat the mapping check immediately
+   before migration.
+4. Preserve every original revision unchanged and create one migrated
+   representation linked to its source revision, as directed by the owner.
+   Define durable link storage and current-revision selection in the backend
+   implementation. Migrate active drafts and published content before
+   switching known consumers. The legacy slug route and client fallback can
+   then be removed in the coordinated non-production cutover; no deprecation
+   period is proposed.
+5. Validate the backend, web, and iOS against the migrated content and remove
+   all legacy-route callers in the same planned transition. Keep the separate
+   user-facing page slug field/URLs unless separately approved.
+
+### Proposed cutover and validation
+
+- Coordinate the backend change and dependent web/iOS updates as one bounded
+  non-production transition, following accepted [ADR 0003](../../architecture/decisions/0003-coordinated-backend-first-web-transition.md).
+  Temporary incompatibility is acceptable; no public deprecation signal,
+  notice duration, zero-traffic observation window, or backward-compatible
+  fallback is required.
+- Before cutover, verify the approved payload mappings and migrate active
+  content. The cutover gate is successful API/client tests plus end-to-end
+  checks for page selection, navigation, rendering, editor saves, and error
+  handling in every known client. If a check fails, forward-fix the
+  non-production environment; do not assume database rollback is safe after
+  content/schema changes.
+- Keep any future production-release communications, monitoring, recovery, and
+  compatibility requirements out of this proposal; they require separate
+  owner approval before production exists.
+
+### Remaining design and execution gates
+
+- Define the precise role values, role-specific field names and allowed
+  values, and mappings for every legacy property in the table.
+- Review the candidate backend lineage fields, uniqueness rule, write window,
+  idempotency constraints, migration test requirements, and implementation
+  transaction sequence above.
+- Confirm any additional active consumers beyond the hosted development
+  database, backend, web, and iOS, and define the cutover validation matrix.
+- Complete a fresh aggregate inventory and a dry-run mapping report before
+  executing migration; use the accepted non-production forward-fix approach.
+
 ## Outstanding evidence and removal gates
 
-These are proposed gates, not an approved notice/monitoring policy:
+The first two inventory gates are partially satisfied for the known
+development environment. Remaining gates concern correct migration and
+validation, not a backwards-compatibility window:
 
-1. Identify operational owners and all environments/clients/producers. Confirm
-   external consumers explicitly rather than interpreting no source match as
-   no usage.
+1. Confirm whether any additional environments, clients, or producers beyond
+   the approved hosted development database, backend, web, and iOS are in the
+   pre-production scope. External consumers are not assumed to be supported
+   before launch; include any the owner identifies.
 2. Obtain authorized, read-only aggregate inventory for each environment:
    legacy fields/effective-type conflicts, navigation targets and unresolved
    slugs, locale coverage, drafts, published and historical page revisions,
    reusable drafts/revisions, and nested nodes. No raw content or private data
-   belongs in this document. Current counts are **unknown**, not zero.
-3. Approve current section/navigation representations and migration mappings.
-   Quarantine ambiguous records; preserve unknown-component safety. Decide
-   how immutable revision history is retained or superseded.
-4. Migrate producers and affected content; validate before/after behavior in
-   web and iOS, not just JSON syntax or schema metadata.
-5. Approve deprecation signals, notice duration, usage observation window,
-   telemetry ownership, acceptable unknown/conflict counts, and recovery.
-   No date or zero-usage claim is established by this source inventory.
-6. Require verified UUID replacements for known callers, approved zero
-   remaining dependencies (including historical content that can still be
-   served), successful integration checks, and explicit removal authorization.
+   belongs in this document. The hosted development database is inventoried
+   above; counts for any other environment remain **unknown**, not zero.
+3. Approve current component/navigation representations and migration mappings.
+   Resolve ambiguous records and preserve unknown-component safety. Define how
+   consumers access linked migrated representations without changing originals.
+4. Create linked migrated representations for all 55 selected revisions,
+   switch active-content selection, and update every known in-scope producer
+   and consumer.
+5. Run focused tests and end-to-end checks for all known clients against the
+   migrated backend/content; remove legacy route and fallback code as part of
+   the coordinated non-production cutover.
 
-Until then, retain slug lookup, slug navigation, `legacyType`, and adjacent
-legacy props. Adding a replacement is not permission to delete compatibility.
+No staged deprecation or compatibility support is proposed for this
+pre-production work. A separate transition plan is required before any future
+production rollout.

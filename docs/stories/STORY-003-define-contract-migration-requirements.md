@@ -51,10 +51,10 @@ transition plan and runtime-client inventory.
 | Surface | Current contract or behavior | Required coordination |
 |---|---|---|
 | Shared [`api/openapi.json`](../../api/openapi.json) | `GET /pages/{id}`, `GET /pages/{id}/versions/{version}`, and `GET /lessons/{id}/pages` use UUID identities and `Page.content.blocks`. This is not the backend repository's current API contract. | Decide separately whether and how reusable component references and typed navigation are represented in this API. STORY-001 intentionally did not map `sections` to `content.blocks`; do not assume the proposed page-schema references already apply here. |
-| [`page.schema.json`](../../schemas/page.schema.json) | Defines string page `id`, `sections`, inline nodes, component references, and action shapes. | Align page identity with the authoritative OpenAPI UUID before implementation. Define how actions nested in page nodes are validated and serialized. |
+| [`page.schema.json`](../../schemas/page.schema.json) | Defines UUID page `id`, `sections`, inline nodes, component references, and action shapes. | The owner approved that page `id` equals backend `PublicId` and shared OpenAPI `Page.id`; validate nested actions against that identity and serialize consistently. |
 | [`component.schema.json`](../../schemas/component.schema.json) | Defines renderable component types and nested content; it is not the reusable-definition store contract. | Review supported types and properties after the production allowlist is approved. Preserve existing inline content unless a deliberate migration is approved. |
 | [`actions.schema.json`](../../schemas/actions.schema.json) | Proposes `navigate`/`navigateIf` with `pageId`, `showModal` with `modalId`, and HTTPS-only `openExternalUrl`; rejects the generic `target` field. | Backend and every authoring/runtime client must validate the same shapes. The `navigateIf` condition language remains undecided. |
-| Backend `api/openapi.json` and page/action endpoints | `GET /api/pages`, `GET /api/pages/{slug}`, page create/update/delete, `/api/pages/{pageId}/components`, component CRUD, `/api/components/{componentId}/actions`, and action CRUD use integer IDs/slugs; actions are opaque JSON and are not executed. Pages own components. | Backend must align page identity, page/component references, action validation, persistence, errors, and its API description. Inventory and migrate stored action configurations before rejecting `target`. |
+| Backend `api/openapi.json` and page/action endpoints | Backend pages retain an integer database `Id` and a public UUID `PublicId`; legacy slug routes remain alongside UUID-addressed management and published-content lookups. Actions are opaque JSON and are not executed. Pages own components. | Backend `PublicId` is the approved shared page identity. Backend work remains for stored-reference migration, typed action validation, persistence, errors, and API description. |
 | Web `src/api.ts` and `src/App.tsx` | Admin UI uses integer IDs and slugs, edits components and opaque action JSON, and calls the backend CRUD API. It does not execute actions or render end-user dynamic pages. | Update types, editor authoring/validation, and API calls only after backend contract is available. `npm run build` is available; no web test script is defined. |
 
 The currently accessible implementation repositories are
@@ -106,9 +106,10 @@ approval for a maximum incompatibility window and its operational plan.
 - Complete migration and validation before deploying a backend that rejects
   `target`. No compatibility shim or dual-read period is part of the reviewed
   direction.
-- The backend currently has integer IDs/slugs, the shared OpenAPI has UUID
-  `Page.id`, and `page.schema.json` has a string `id`. Define and validate the
-  mapping before converting any navigation data.
+- The owner approved that shared OpenAPI `Page.id`, `page.schema.json` `id`,
+  and navigation `pageId` equal backend `PublicId`; integer IDs and slugs are
+  not substitutes. Repeat and validate stored page mappings immediately
+  before converting navigation data.
 
 ## Repository coordination and validation
 

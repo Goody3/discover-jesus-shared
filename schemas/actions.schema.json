@@ -28,7 +28,7 @@
           "type": "string",
           "format": "uuid",
           "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
-          "description": "Stable UUID of the destination page for navigate and navigateIf actions."
+          "description": "Stable UUID of the destination page for navigate and navigateIf actions; equal to that page's backend PublicId and shared Page.id."
         },
 
         "modalId": {
