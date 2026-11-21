@@ -4,7 +4,8 @@
   discovery cross-check is complete. A production type allowlist remains
   unapproved.
 - **Related story:** [STORY-001](../stories/STORY-001-define-component-reference-contract.md)
-- **Related decisions:** [ADR 0001](../../architecture/decisions/0001-backend-managed-component-store.md)
+- **Related decisions:** [ADR 0001](../../architecture/decisions/0001-backend-managed-component-store.md),
+  [ADR 0006](../../architecture/decisions/0006-uuid-page-identity-and-linked-content-migration.md)
 - **Reviewed:** 2026-10-31
 
 ## Purpose and current evidence
@@ -13,6 +14,12 @@ This draft identifies the contract choices needed to let pages reuse
 backend-managed components. It is technology-independent; the page JSON Schema
 defines the proposed authored reference shape and response provenance. This
 does not implement backend resolution or change the shared OpenAPI.
+
+For EPIC-003 legacy migration, the owner approved generic component types with
+a top-level semantic `role`; examples such as `heading` in this proposal are
+not an approved specialized-type allowlist. The broader reusable-component
+catalog remains a separate proposal and must be reconciled before
+implementation.
 
 ## Direction recorded
 

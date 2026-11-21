@@ -1,6 +1,11 @@
 # EPIC-004. Secure content authoring and access
 
-- **Status:** Proposed
+- **Status:** In progress. STORY-023 origin and request safeguards are merged
+  to backend `dev` in
+  [discover-jesus-backend#19](https://github.com/Goody3/discover-jesus-backend/pull/19),
+  with passing CI; they are not deployed. STORY-024 content validation is
+  implemented locally across backend and Content Studio; SQL Server
+  integration and remote CI remain.
 - **Owner:** TBD
 - **Vision alignment:** Platform vision outcomes are not yet defined; see
   [vision.md](../vision.md). The vision's goal of serving multiple churches

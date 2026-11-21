@@ -77,3 +77,10 @@ split it into separate story documents and update the parent epic.
   `dev` CI verification and compatibility gaps documented; EPIC-003.
 - [STORY-017. Retire legacy component-type fallbacks](STORY-017-retire-legacy-component-type-fallbacks.md) —
   proposed; inventory and owner approval required before removal; EPIC-003.
+- [STORY-023. Apply origin and request limits](STORY-023-apply-origin-and-request-limits.md) —
+  complete; merged to backend `dev` in
+  [discover-jesus-backend#19](https://github.com/Goody3/discover-jesus-backend/pull/19)
+  with passing CI; not deployed; EPIC-004.
+- [STORY-024. Validate content before storage](STORY-024-validate-content-before-storage.md) —
+  in progress; backend and Content Studio changes locally validated; SQL Server
+  integration and remote CI remain; EPIC-004.

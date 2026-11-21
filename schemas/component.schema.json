@@ -24,6 +24,11 @@
       ]
     },
 
+    "role": {
+      "type": "string",
+      "description": "Semantic role independent of the generic component type and presentation style. Canonical values and role-specific constraints remain to be defined."
+    },
+
     "value": {
       "type": "string",
       "description": "Text content or binding expression for text components."
@@ -79,4 +84,3 @@
     }
   }
 }
-
